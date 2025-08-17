@@ -1,35 +1,45 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import Products from './pages/Products'
-import Orders from './pages/Orders'
-import AddProduct from './pages/AddProduct'
-import Sidebar from './components/Sidebar'
-import { isLoggedIn } from './utils/auth'
+import { Routes, Route, Navigate, useLocation } from "react-router-dom"
+import { useState, useEffect } from "react"
+import Login from "./pages/Login"
+import Dashboard from "./pages/Dashboard"
+import Products from "./pages/Products"
+import Orders from "./pages/Orders"
+import AddProduct from "./pages/AddProduct"
+import Sidebar from "./components/Sidebar"
+import Navbar from "./components/Navbar"
+import { isLoggedIn } from "./utils/auth"
 
 export default function App() {
   const location = useLocation()
-  const showSidebar = isLoggedIn() && location.pathname !== "/"
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn())
+
+  useEffect(() => {
+    const checkAuth = () => setLoggedIn(isLoggedIn())
+    window.addEventListener("storage", checkAuth)
+    return () => window.removeEventListener("storage", checkAuth)
+  }, [])
+
+  const showSidebar = loggedIn && location.pathname !== "/"
 
   return (
     <div className="flex">
       {showSidebar && <Sidebar />}
-      <div className={showSidebar ? "ml-60 p-4 w-full" : "w-full"}>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
-          <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-          <Route path="/add-product" element={<ProtectedRoute><AddProduct /></ProtectedRoute>} />
-        </Routes>
+      <div className={showSidebar ? "pl-60 flex-1 min-h-screen bg-gray-50" : "w-full"}>
+        {showSidebar && <Navbar title={location.pathname.replace("/", "") || "Dashboard"} />}
+        <div className="p-6">
+          <Routes>
+            <Route path="/" element={<Login onLogin={() => setLoggedIn(true)} />} />
+            <Route path="/dashboard" element={<ProtectedRoute loggedIn={loggedIn}><Dashboard /></ProtectedRoute>} />
+            <Route path="/products" element={<ProtectedRoute loggedIn={loggedIn}><Products /></ProtectedRoute>} />
+            <Route path="/orders" element={<ProtectedRoute loggedIn={loggedIn}><Orders /></ProtectedRoute>} />
+            <Route path="/add-product" element={<ProtectedRoute loggedIn={loggedIn}><AddProduct /></ProtectedRoute>} />
+          </Routes>
+        </div>
       </div>
     </div>
   )
 }
-<div className="text-3xl font-bold underline bg-green-300 p-4">
-  Tailwind is finally working, honey! 🎉
-</div>
 
-function ProtectedRoute({ children }) {
-  return isLoggedIn() ? children : <Navigate to="/" />
+function ProtectedRoute({ children, loggedIn }) {
+  return loggedIn ? children : <Navigate to="/" />
 }

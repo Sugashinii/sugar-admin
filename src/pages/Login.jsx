@@ -1,33 +1,66 @@
-import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { login } from "../utils/auth"
 
-export default function Login() {
+export default function Login({ onLogin }) {
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
   const navigate = useNavigate()
 
-  // Already logged in? Redirect to dashboard
-  useEffect(() => {
-    if (localStorage.getItem("isLoggedIn")) {
-      navigate("/dashboard")
-    }
-  }, [])
+  const handleSubmit = (e) => {
+    e.preventDefault()
 
-  const handleLogin = () => {
-    localStorage.setItem("isLoggedIn", "true")
-    navigate("/dashboard")
+    // ✅ Hardcoded credentials
+    const hardUser = "admin"
+    const hardPass = "1234"
+
+    if (username === hardUser && password === hardPass) {
+      login("fake-token") // store token in localStorage
+      onLogin?.()         // 👈 notify App.jsx that login happened
+      navigate("/dashboard")
+    } else {
+      setError("Invalid username or password ❌")
+    }
   }
 
   return (
-    <div className="flex items-center justify-center h-screen bg-sugarCream">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96 text-center">
-        <h1 className="text-2xl mb-4 font-bold text-sugarBrown">Sugar Cosmetics Admin</h1>
-        <p className="mb-6 text-sm text-sugarBrown">Login to manage your store</p>
-        <button
-          className="bg-sugarPink hover:bg-sugarBrown text-white px-6 py-2 rounded transition"
-          onClick={handleLogin}
+    <div className="h-screen w-screen flex items-center justify-center bg-gray-200 relative">
+      {/* blurred background */}
+      <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-md"></div>
+
+      {/* login box */}
+      <form 
+        onSubmit={handleSubmit} 
+        className="relative z-10 bg-white p-8 rounded-2xl shadow-lg w-80"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Sugar Admin</h2>
+        
+        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+
+        <input 
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full mb-4 p-2 border rounded"
+        />
+
+        <input 
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full mb-6 p-2 border rounded"
+        />
+
+        <button 
+          type="submit"
+          className="w-full bg-pink-500 text-white py-2 rounded hover:bg-pink-600 transition"
         >
           Login
         </button>
-      </div>
+      </form>
     </div>
   )
 }
