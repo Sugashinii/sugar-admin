@@ -7,6 +7,7 @@ import Orders from "./pages/Orders"
 import AddProduct from "./pages/AddProduct"
 import Sidebar from "./components/Sidebar"
 import Navbar from "./components/Navbar"
+
 import { isLoggedIn } from "./utils/auth"
 
 export default function App() {
