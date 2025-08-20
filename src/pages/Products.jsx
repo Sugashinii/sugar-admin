@@ -1,4 +1,3 @@
-// src/pages/Products.jsx
 import React, { useState, useEffect } from "react"
 import { Plus } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -7,24 +6,21 @@ const Products = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Start with an empty list (no dummy products)
   const [products, setProducts] = useState([])
 
-  // 👇 If a new product was added in AddProduct, push it into the state
   useEffect(() => {
     if (location.state?.newProduct) {
       setProducts((prev) => [
         ...prev,
         { id: prev.length + 1, ...location.state.newProduct },
       ])
-      // clear state so it doesn't re-add on refresh
+
       navigate("/products", { replace: true })
     }
   }, [location.state, navigate])
 
   return (
     <div className="flex-1 p-6">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Manage Products</h1>
         <button
@@ -35,8 +31,6 @@ const Products = () => {
           Add New Product
         </button>
       </div>
-
-      {/* Table */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead className="bg-gray-100">

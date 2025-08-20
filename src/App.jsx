@@ -1,19 +1,14 @@
-// src/App.jsx
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
-
-// Pages
 import Login from "./pages/Login.jsx"
 import Dashboard from "./pages/Dashboard.jsx"
 import Products from "./pages/Products.jsx"
 import Orders from "./pages/Orders.jsx"
 import AddProduct from "./pages/AddProduct.jsx"
 
-// Components
 import Sidebar from "./components/Sidebar.jsx"
 import Navbar from "./components/Navbar.jsx"
 
-// Utils
 import { isLoggedIn } from "./utils/auth.js"
 
 export default function App() {
@@ -26,7 +21,7 @@ export default function App() {
     return () => window.removeEventListener("storage", checkAuth)
   }, [])
 
-  // Sidebar should not show on login page
+
   const showSidebar = loggedIn && location.pathname !== "/"
 
   return (
@@ -38,10 +33,10 @@ export default function App() {
         )}
         <div className="p-6">
           <Routes>
-            {/* Public Route */}
+          
             <Route path="/" element={<Login onLogin={() => setLoggedIn(true)} />} />
 
-            {/* Protected Routes */}
+           
             <Route
               path="/dashboard"
               element={

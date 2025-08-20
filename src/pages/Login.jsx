@@ -11,13 +11,12 @@ export default function Login({ onLogin }) {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    // ✅ Hardcoded credentials
     const hardUser = "admin"
     const hardPass = "1234"
 
     if (username === hardUser && password === hardPass) {
-      login("fake-token") // store token in localStorage
-      onLogin?.()         // 👈 notify App.jsx that login happened
+      login("fake-token")
+      onLogin?.()         
       navigate("/dashboard")
     } else {
       setError("Invalid username or password ❌")
@@ -26,10 +25,9 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-gray-200 relative">
-      {/* blurred background */}
+    
       <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-md"></div>
 
-      {/* login box */}
       <form 
         onSubmit={handleSubmit} 
         className="relative z-10 bg-white p-8 rounded-2xl shadow-lg w-80"

@@ -1,4 +1,3 @@
-// src/pages/AddProduct.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +14,7 @@ const AddProduct = () => {
     image: "",
   });
 
-  const categories = ["Serum", "Moisturizer", "Sunscreen", "Cleanser", "Toner"];
+  const categories = [ "Cleanser","Toner","Serum", "Moisturizer", "Sunscreen" ];
   const quantities = ["10", "20", "50", "100", "200"];
   const ratings = ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"];
 
@@ -28,7 +27,7 @@ const AddProduct = () => {
     if (file) {
       setFormData({
         ...formData,
-        image: URL.createObjectURL(file), // preview image
+        image: URL.createObjectURL(file),
       });
     }
   };
@@ -36,7 +35,6 @@ const AddProduct = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Navigate back to Products and pass the form data
     navigate("/products", { state: { newProduct: formData } });
   };
 
@@ -48,7 +46,7 @@ const AddProduct = () => {
         onSubmit={handleSubmit}
         className="bg-white shadow rounded-lg p-6 space-y-4 max-w-2xl"
       >
-        {/* Upload Image */}
+
         <div>
           <label className="block text-sm font-medium mb-2">Product Image</label>
           <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-pink-500 transition">
@@ -73,7 +71,7 @@ const AddProduct = () => {
           </div>
         </div>
 
-        {/* Product Name */}
+
         <div>
           <label className="block text-sm font-medium">Product Name</label>
           <input
@@ -86,7 +84,6 @@ const AddProduct = () => {
           />
         </div>
 
-        {/* Category */}
         <div>
           <label className="block text-sm font-medium">Category</label>
           <select
@@ -105,7 +102,6 @@ const AddProduct = () => {
           </select>
         </div>
 
-        {/* Quantity */}
         <div>
           <label className="block text-sm font-medium">Quantity</label>
           <select
@@ -124,7 +120,6 @@ const AddProduct = () => {
           </select>
         </div>
 
-        {/* Price */}
         <div>
           <label className="block text-sm font-medium">Price</label>
           <input
@@ -137,7 +132,7 @@ const AddProduct = () => {
           />
         </div>
 
-        {/* Star Rating */}
+      
         <div>
           <label className="block text-sm font-medium">Star Rating</label>
           <select
@@ -155,7 +150,6 @@ const AddProduct = () => {
           </select>
         </div>
 
-        {/* Status */}
         <div>
           <label className="block text-sm font-medium">Status</label>
           <select
@@ -169,7 +163,7 @@ const AddProduct = () => {
           </select>
         </div>
 
-        {/* Submit */}
+        
         <button
           type="submit"
           className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
