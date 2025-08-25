@@ -35,10 +35,9 @@ const Products = () => {
         <table className="w-full text-left border-collapse">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-3"><input type="checkbox" /></th>
+             
               <th className="p-3">Product Name</th>
               <th className="p-3">Category</th>
-              <th className="p-3">SKU</th>
               <th className="p-3">Quantity</th>
               <th className="p-3">Price</th>
               <th className="p-3">Status</th>
@@ -67,7 +66,7 @@ const Products = () => {
                     {p.name}
                   </td>
                   <td className="p-3">{p.category}</td>
-                  <td className="p-3">{p.sku}</td>
+              
                   <td className="p-3">{p.quantity}</td>
                   <td className="p-3">{p.price}</td>
                   <td className="p-3">
