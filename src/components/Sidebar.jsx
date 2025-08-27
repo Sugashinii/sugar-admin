@@ -11,7 +11,7 @@ export default function Sidebar() {
   }
 
   return (
-    <div className="w-60 h-screen fixed left-0 top-0 bg-white border-r shadow-sm flex flex-col justify-between">
+    <div className="w-30 h-screen fixed left-0 top-0 bg-white border-r shadow-sm flex flex-col justify-between">
       
       <div>
         <h1 className="text-2xl font-bold text-pink-600 p-6">Sugar Admin</h1>
