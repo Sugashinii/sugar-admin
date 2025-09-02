@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import TableHeader from "../components/ui/TableHeader";
 import TableRow from "../components/ui/TableRow";
 import MyButton from "../components/ui/MyButton";
+import ActionMenu from "../components/ui/KebabMenu";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 
 const Orders = () => {
   const [orders, setOrders] = useState([
@@ -12,13 +14,11 @@ const Orders = () => {
   ]);
 
   const [editingOrder, setEditingOrder] = useState(null);
-
-  const handleEdit = (order) => {
-    setEditingOrder(order);
-  };
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const handleDelete = (id) => {
     setOrders((prev) => prev.filter((order) => order.id !== id));
+    setConfirmDelete(null);
   };
 
   const handleSave = () => {
@@ -54,12 +54,19 @@ const Orders = () => {
               </tr>
             ) : (
               orders.map((order) => (
-                <TableRow
-                  key={order.id}
-                  row={order}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
+                <tr key={order.id} className="border-b">
+                  <td className="p-4">{order.id}</td>
+                  <td className="p-4">{order.customer}</td>
+                  <td className="p-4">{order.product}</td>
+                  <td className="p-4">{order.quantity}</td>
+                  <td className="p-4">{order.status}</td>
+                  <td className="p-4">
+                    <ActionMenu
+                      onEdit={() => setEditingOrder(order)}
+                      onDelete={() => setConfirmDelete(order.id)}
+                    />
+                  </td>
+                </tr>
               ))
             )}
           </tbody>
@@ -93,6 +100,13 @@ const Orders = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={() => handleDelete(confirmDelete)}
+      />
     </div>
   );
 };

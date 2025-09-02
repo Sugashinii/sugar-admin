@@ -6,7 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./dropdown-menu"; // relative path
+} from "@/components/ui/dropdown-menu"; // ✅ use alias path
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogDescription,
-} from "./alert-dialog"; // relative path
+} from "@/components/ui/alert-dialog"; // ✅ use alias path
 
 export default function TableRow({ row, onEdit, onDelete }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
