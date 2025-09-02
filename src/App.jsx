@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard.jsx"
 import Products from "./pages/Products.jsx"
 import Orders from "./pages/Orders.jsx"
 import AddProduct from "./pages/AddProduct.jsx"
+import Customers from "./pages/Customers.jsx"
 
 import Sidebar from "./components/Sidebar.jsx"
 import Navbar from "./components/Navbar.jsx"
@@ -69,6 +70,15 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+             
+  <Route
+    path="/customers"
+    element={
+      <ProtectedRoute loggedIn={loggedIn}>
+        <Customers />
+      </ProtectedRoute>
+    }
+  />
           </Routes>
         </div>
       </div>

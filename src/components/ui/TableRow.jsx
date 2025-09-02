@@ -6,7 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // ✅ use alias path
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,27 +16,32 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogDescription,
-} from "@/components/ui/alert-dialog"; // ✅ use alias path
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 export default function TableRow({ row, onEdit, onDelete }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   return (
-    <tr className="border-b hover:bg-gray-50">
-      <td className="px-4 py-2 text-sm">{row.id}</td>
-      <td className="px-4 py-2 text-sm">{row.customer}</td>
-      <td className="px-4 py-2 text-sm">{row.product}</td>
-      <td className="px-4 py-2 text-sm">{row.quantity}</td>
-      <td className="px-4 py-2">
+    <tr className="border-b border-rose-100 hover:bg-rose-50 transition-colors duration-200">
+      <td className="px-4 py-3 text-sm text-slate-700">{row.id}</td>
+      <td className="px-4 py-3 text-sm text-slate-700">{row.customer}</td>
+      <td className="px-4 py-3 text-sm text-slate-700">{row.product}</td>
+      <td className="px-4 py-3 text-sm text-slate-700">{row.quantity}</td>
+      <td className="px-4 py-3">
         <StatusBadge status={row.status} />
       </td>
-      <td className="px-4 py-2 text-right">
+      <td className="px-4 py-3 text-right">
         {/* 3-dot menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="p-2 rounded hover:bg-gray-100">
-              <MoreVertical className="w-5 h-5 text-gray-600" />
-            </button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-slate-500 hover:text-rose-600 transition-colors duration-200"
+            >
+              <MoreVertical size={16} />
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32">
             <DropdownMenuItem onClick={() => onEdit(row)}>Edit</DropdownMenuItem>
@@ -51,9 +56,9 @@ export default function TableRow({ row, onEdit, onDelete }) {
 
         {/* Delete confirmation dialog */}
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <AlertDialogContent>
+          <AlertDialogContent className="w-full max-w-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle className="text-xl">Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
                 This action cannot be undone. This will permanently delete order{" "}
                 <span className="font-semibold">{row.id}</span>.

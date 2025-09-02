@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import TableHeader from "../components/ui/TableHeader";
-import TableRow from "../components/ui/TableRow";
 import MyButton from "../components/ui/MyButton";
-import ActionMenu from "../components/ui/KebabMenu";
-import ConfirmDialog from "../components/ui/ConfirmDialog";
+import RowActions from "../components/ui/RowActions";
 
 const Orders = () => {
   const [orders, setOrders] = useState([
@@ -13,30 +11,21 @@ const Orders = () => {
     { id: "ORD-104", customer: "Alert Aarumugam", product: "Sunscreen", quantity: 1, status: "Cancelled" },
   ]);
 
-  const [editingOrder, setEditingOrder] = useState(null);
-  const [confirmDelete, setConfirmDelete] = useState(null);
-
-  const handleDelete = (id) => {
-    setOrders((prev) => prev.filter((order) => order.id !== id));
-    setConfirmDelete(null);
-  };
-
-  const handleSave = () => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === editingOrder.id ? editingOrder : o))
-    );
-    setEditingOrder(null);
-  };
-
   const columns = ["Order ID", "Customer", "Product", "Quantity", "Status", "Actions"];
 
+  const handleUpdate = (updatedRow) => {
+    setOrders((prev) => prev.map((o) => (o.id === updatedRow.id ? updatedRow : o)));
+  };
+
+  const handleDelete = (id) => {
+    setOrders((prev) => prev.filter((o) => o.id !== id));
+  };
+
   return (
-    <div className="flex-1 p-6">
+    <div className="flex-1 p-6 bg-gray-50">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Orders</h1>
-        <MyButton onClick={() => console.log("Add new order")}>
-          Add New Order
-        </MyButton>
+        <MyButton>Add New Order</MyButton>
       </div>
 
       <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -45,26 +34,20 @@ const Orders = () => {
           <tbody>
             {orders.length === 0 ? (
               <tr>
-                <td
-                  colSpan={columns.length}
-                  className="p-6 text-center text-gray-500"
-                >
+                <td colSpan={columns.length} className="p-6 text-center text-gray-500">
                   No orders yet.
                 </td>
               </tr>
             ) : (
               orders.map((order) => (
-                <tr key={order.id} className="border-b">
+                <tr key={order.id} className="border-b hover:bg-rose-50 transition-colors">
                   <td className="p-4">{order.id}</td>
                   <td className="p-4">{order.customer}</td>
                   <td className="p-4">{order.product}</td>
                   <td className="p-4">{order.quantity}</td>
                   <td className="p-4">{order.status}</td>
-                  <td className="p-4">
-                    <ActionMenu
-                      onEdit={() => setEditingOrder(order)}
-                      onDelete={() => setConfirmDelete(order.id)}
-                    />
+                  <td className="p-4 text-right">
+                    <RowActions row={order} onUpdate={handleUpdate} onDelete={handleDelete} />
                   </td>
                 </tr>
               ))
@@ -72,41 +55,6 @@ const Orders = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Edit Modal */}
-      {editingOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Edit Order Status</h2>
-            <select
-              value={editingOrder.status}
-              onChange={(e) =>
-                setEditingOrder({ ...editingOrder, status: e.target.value })
-              }
-              className="border p-2 mb-4 w-full"
-            >
-              <option>Pending</option>
-              <option>Shipped</option>
-              <option>Delivered</option>
-              <option>Cancelled</option>
-            </select>
-
-            <div className="flex justify-end gap-2">
-              <MyButton variant="secondary" onClick={() => setEditingOrder(null)}>
-                Cancel
-              </MyButton>
-              <MyButton onClick={handleSave}>Save</MyButton>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation */}
-      <ConfirmDialog
-        open={!!confirmDelete}
-        onClose={() => setConfirmDelete(null)}
-        onConfirm={() => handleDelete(confirmDelete)}
-      />
     </div>
   );
 };
