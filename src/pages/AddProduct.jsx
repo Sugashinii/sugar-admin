@@ -11,14 +11,14 @@ const AddProduct = () => {
     category: "",
     quantity: "",
     price: "",
-    rating: "",
+
     status: "Active",
     image: "",
   });
 
   const categories = ["Cleanser","Toner","Serum","Moisturizer","Sunscreen"];
   const quantities = ["10","20","50","100","200"];
-  const ratings = ["⭐","⭐⭐","⭐⭐⭐","⭐⭐⭐⭐","⭐⭐⭐⭐⭐"];
+  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -64,7 +64,7 @@ const AddProduct = () => {
         <FormSelect label="Category" name="category" value={formData.category} options={categories} onChange={handleChange} required />
         <FormSelect label="Quantity" name="quantity" value={formData.quantity} options={quantities} onChange={handleChange} required />
         <FormInput label="Price" type="number" name="price" value={formData.price} onChange={handleChange} required />
-        <FormSelect label="Star Rating" name="rating" value={formData.rating} options={ratings} onChange={handleChange} />
+       
         <FormSelect label="Status" name="status" value={formData.status} options={["Active","Inactive"]} onChange={handleChange} />
 
         <MyButton type="submit">Save Product</MyButton>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Sun, Moon } from "lucide-react"; // ✅ Lucide icons
+import { Sun, Moon } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
@@ -15,31 +15,34 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import MyButton from "@/components/ui/MyButton";
-import { useToast } from "@/hooks/use-toast"; // ✅ correct import
+import { useToast } from "@/hooks/use-toast";
 
 // ---------- Dark Mode Hook ----------
 const useDarkMode = () => {
-  const [isDarkMode, setDarkMode] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    // Check for theme in localStorage on initial load
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") === "dark";
+    }
+    return false; // Default to light mode if window is not available (SSR)
+  });
 
   useEffect(() => {
-    const isDark = localStorage.getItem("theme") === "dark";
-    setDarkMode(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-  }, []);
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
 
-  const toggleDarkMode = () => {
-    const newTheme = !isDarkMode ? "dark" : "light";
-    localStorage.setItem("theme", newTheme);
-    setDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-  };
-
-  return [isDarkMode, toggleDarkMode];
+  return [isDark, setIsDark];
 };
 
 // ---------- Main Settings Page ----------
 export default function AdminSettingsPage() {
-  const [isDarkMode, toggleDarkMode] = useDarkMode();
+  const [isDarkMode, setDarkMode] = useDarkMode();
   const { toast } = useToast();
 
   const defaultSettings = {
@@ -54,13 +57,15 @@ export default function AdminSettingsPage() {
 
   const [settings, setSettings] = useState(defaultSettings);
 
-  // Load saved settings
+  // Load saved settings from localStorage when the component mounts
   useEffect(() => {
     const saved = localStorage.getItem("admin-settings");
-    if (saved) setSettings(JSON.parse(saved));
+    if (saved) {
+      setSettings(JSON.parse(saved));
+    }
   }, []);
 
-  // Save settings
+  // Save current settings to localStorage
   const handleSave = () => {
     localStorage.setItem("admin-settings", JSON.stringify(settings));
     toast({
@@ -69,27 +74,27 @@ export default function AdminSettingsPage() {
     });
   };
 
-  // Reset settings
+  // Reset settings to default and save to localStorage
   const handleReset = () => {
     setSettings(defaultSettings);
     localStorage.setItem("admin-settings", JSON.stringify(defaultSettings));
     toast({
       title: "🔄 Settings reset",
-      description: "All settings have been reset to defaults.",
+      description: "All settings have been reset to their default values.",
     });
   };
 
   return (
-    <div className="bg-background min-h-screen p-8 transition-colors">
+    <div className="min-h-screen p-8 bg-gray-100 dark:bg-gray-900 transition-colors">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-foreground">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             SUGAR Admin Settings
           </h1>
           <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+            onClick={() => setDarkMode(!isDarkMode)}
+            className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
             aria-label="Toggle dark mode"
           >
             {isDarkMode ? (
@@ -100,7 +105,7 @@ export default function AdminSettingsPage() {
           </button>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs for organizing settings */}
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="grid grid-cols-4 w-full mb-6">
             <TabsTrigger value="general">General</TabsTrigger>
@@ -109,22 +114,22 @@ export default function AdminSettingsPage() {
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
 
-          {/* General */}
+          {/* General Settings Tab */}
           <TabsContent value="general">
-            <Card>
+            <Card className="shadow-md rounded-xl">
               <CardHeader>
                 <CardTitle>General Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Label>Admin Panel Language</Label>
+                  <Label htmlFor="language-select">Admin Panel Language</Label>
                   <Select
                     value={settings.defaultLanguage}
                     onValueChange={(value) =>
                       setSettings((p) => ({ ...p, defaultLanguage: value }))
                     }
                   >
-                    <SelectTrigger className="mt-2 w-[250px]">
+                    <SelectTrigger id="language-select" className="mt-2 w-[250px]">
                       <SelectValue placeholder="Choose language" />
                     </SelectTrigger>
                     <SelectContent>
@@ -138,22 +143,22 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-          {/* Product */}
+          {/* Product Settings Tab */}
           <TabsContent value="product">
-            <Card>
+            <Card className="shadow-md rounded-xl">
               <CardHeader>
                 <CardTitle>Product & Catalog</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Label>Default Product Sorting</Label>
+                  <Label htmlFor="sorting-select">Default Product Sorting</Label>
                   <Select
                     value={settings.productSorting}
                     onValueChange={(value) =>
                       setSettings((p) => ({ ...p, productSorting: value }))
                     }
                   >
-                    <SelectTrigger className="mt-2 w-[250px]">
+                    <SelectTrigger id="sorting-select" className="mt-2 w-[250px]">
                       <SelectValue placeholder="Choose sorting" />
                     </SelectTrigger>
                     <SelectContent>
@@ -170,8 +175,9 @@ export default function AdminSettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <Label>Enable Product Reviews</Label>
+                  <Label htmlFor="reviews-switch">Enable Product Reviews</Label>
                   <Switch
+                    id="reviews-switch"
                     checked={settings.enableReviews}
                     onCheckedChange={(v) =>
                       setSettings((p) => ({ ...p, enableReviews: v }))
@@ -180,8 +186,9 @@ export default function AdminSettingsPage() {
                 </div>
 
                 <div>
-                  <Label>Low Stock Threshold</Label>
+                  <Label htmlFor="stock-threshold">Low Stock Threshold</Label>
                   <Input
+                    id="stock-threshold"
                     type="number"
                     min={1}
                     className="mt-2 w-[150px]"
@@ -198,16 +205,17 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-          {/* Marketing */}
+          {/* Marketing Settings Tab */}
           <TabsContent value="marketing">
-            <Card>
+            <Card className="shadow-md rounded-xl">
               <CardHeader>
                 <CardTitle>Marketing</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <Label>Enable Promo Codes</Label>
+                  <Label htmlFor="promo-switch">Enable Promo Codes</Label>
                   <Switch
+                    id="promo-switch"
                     checked={settings.promoCodeStatus}
                     onCheckedChange={(v) =>
                       setSettings((p) => ({ ...p, promoCodeStatus: v }))
@@ -216,8 +224,9 @@ export default function AdminSettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <Label>New Order Email Notifications</Label>
+                  <Label htmlFor="email-switch">New Order Email Notifications</Label>
                   <Switch
+                    id="email-switch"
                     checked={settings.emailNotifications}
                     onCheckedChange={(v) =>
                       setSettings((p) => ({ ...p, emailNotifications: v }))
@@ -228,16 +237,17 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-          {/* Security */}
+          {/* Security Settings Tab */}
           <TabsContent value="security">
-            <Card>
+            <Card className="shadow-md rounded-xl">
               <CardHeader>
                 <CardTitle>Security</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <Label>Require Admin 2FA</Label>
+                  <Label htmlFor="2fa-switch">Require Admin 2FA</Label>
                   <Switch
+                    id="2fa-switch"
                     checked={settings.twoFactorAuth}
                     onCheckedChange={(v) =>
                       setSettings((p) => ({ ...p, twoFactorAuth: v }))
@@ -249,14 +259,14 @@ export default function AdminSettingsPage() {
           </TabsContent>
         </Tabs>
 
-        {/* Buttons */}
+        {/* Action Buttons */}
         <div className="mt-8 flex gap-4">
           <MyButton onClick={handleSave} className="flex-1">
             Save Changes
           </MyButton>
           <MyButton
             onClick={handleReset}
-            className="flex-1 bg-gray-400 hover:bg-gray-500"
+            className="flex-1 bg-gray-400 hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-500"
           >
             Reset Defaults
           </MyButton>

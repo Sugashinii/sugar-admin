@@ -29,7 +29,7 @@ export default function App() {
   return (
     <div className="flex">
       {showSidebar && <Sidebar />}
-      <div className={showSidebar ? "pl-60 flex-1 min-h-screen bg-gray-50" : "w-full"}>
+      <div className={showSidebar ? "pl-64 flex-1 min-h-screen bg-gray-50" : "w-full"}>
         {showSidebar && (
           <Navbar title={location.pathname.replace("/", "") || "Dashboard"} />
         )}
