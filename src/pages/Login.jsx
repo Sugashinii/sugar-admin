@@ -26,7 +26,7 @@ export default function Login({ onLogin }) {
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-gray-200 relative">
     
-      <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-md"></div>
+     
 
       <form 
         onSubmit={handleSubmit} 

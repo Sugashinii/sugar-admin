@@ -2,6 +2,19 @@ import { Link, useNavigate, useLocation } from "react-router-dom"
 import { LogOut, LayoutDashboard, ShoppingCart, Package, Users, Settings } from "lucide-react"
 import { logout } from "../utils/auth"
 
+// import your AlertDialog components
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog"
+
 export default function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -43,13 +56,31 @@ export default function Sidebar() {
         </nav>
       </div>
 
+      {/* 🔥 Logout with confirmation dialog */}
       <div className="border-t pt-4">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 p-3 text-red-500 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors duration-200 w-full"
-        >
-          <LogOut size={20} /> Logout
-        </button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className="flex items-center gap-3 p-3 text-red-500 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors duration-200 w-full">
+              <LogOut size={20} /> Logout
+            </button>
+          </AlertDialogTrigger>
+
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+              <AlertDialogDescription>
+                You will be logged out of your account and redirected to the login page.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              {/* ✅ Confirm logout */}
+              <AlertDialogAction onClick={handleLogout}>
+                Logout
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   )

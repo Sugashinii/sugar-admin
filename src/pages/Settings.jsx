@@ -17,14 +17,14 @@ import {
 import MyButton from "@/components/ui/MyButton";
 import { useToast } from "@/hooks/use-toast";
 
-// ---------- Dark Mode Hook ----------
+
 const useDarkMode = () => {
   const [isDark, setIsDark] = useState(() => {
-    // Check for theme in localStorage on initial load
+
     if (typeof window !== "undefined") {
       return localStorage.getItem("theme") === "dark";
     }
-    return false; // Default to light mode if window is not available (SSR)
+    return false; 
   });
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const useDarkMode = () => {
   return [isDark, setIsDark];
 };
 
-// ---------- Main Settings Page ----------
+
 export default function AdminSettingsPage() {
   const [isDarkMode, setDarkMode] = useDarkMode();
   const { toast } = useToast();
@@ -57,7 +57,7 @@ export default function AdminSettingsPage() {
 
   const [settings, setSettings] = useState(defaultSettings);
 
-  // Load saved settings from localStorage when the component mounts
+
   useEffect(() => {
     const saved = localStorage.getItem("admin-settings");
     if (saved) {
@@ -65,7 +65,7 @@ export default function AdminSettingsPage() {
     }
   }, []);
 
-  // Save current settings to localStorage
+
   const handleSave = () => {
     localStorage.setItem("admin-settings", JSON.stringify(settings));
     toast({
@@ -74,7 +74,7 @@ export default function AdminSettingsPage() {
     });
   };
 
-  // Reset settings to default and save to localStorage
+
   const handleReset = () => {
     setSettings(defaultSettings);
     localStorage.setItem("admin-settings", JSON.stringify(defaultSettings));
@@ -85,9 +85,9 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100 dark:bg-gray-900 transition-colors">
+    <div className="min-h-screen p-8 bg-gray-100 transition-colors">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
+    
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             SUGAR Admin Settings
@@ -105,7 +105,7 @@ export default function AdminSettingsPage() {
           </button>
         </div>
 
-        {/* Tabs for organizing settings */}
+       
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="grid grid-cols-4 w-full mb-6">
             <TabsTrigger value="general">General</TabsTrigger>
@@ -114,7 +114,7 @@ export default function AdminSettingsPage() {
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
 
-          {/* General Settings Tab */}
+        
           <TabsContent value="general">
             <Card className="shadow-md rounded-xl">
               <CardHeader>
