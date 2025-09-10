@@ -7,7 +7,7 @@ import Orders from "./pages/Orders.jsx"
 import AddProduct from "./pages/AddProduct.jsx"
 import Customers from "./pages/Customers.jsx"
 import Settings from "./pages/Settings.jsx"
-
+import AddOrder from "./pages/AddOrder.jsx"
 import Sidebar from "./components/Sidebar.jsx"
 import Navbar from "./components/Navbar.jsx"
 
@@ -23,7 +23,6 @@ export default function App() {
     return () => window.removeEventListener("storage", checkAuth)
   }, [])
 
-
   const showSidebar = loggedIn && location.pathname !== "/"
 
   return (
@@ -35,10 +34,8 @@ export default function App() {
         )}
         <div className="p-6">
           <Routes>
-          
             <Route path="/" element={<Login onLogin={() => setLoggedIn(true)} />} />
 
-           
             <Route
               path="/dashboard"
               element={
@@ -63,6 +60,15 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+          
+            <Route
+              path="/orders/add"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <AddOrder />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/add-product"
               element={
@@ -71,24 +77,22 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-             
-  <Route
-    path="/customers"
-    element={
-      <ProtectedRoute loggedIn={loggedIn}>
-        <Customers />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-  path="/settings"
-  element={
-    <ProtectedRoute loggedIn={loggedIn}>
-      <Settings />
-    </ProtectedRoute>
-  }
-/>
-
+            <Route
+              path="/customers"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <Customers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </div>
       </div>

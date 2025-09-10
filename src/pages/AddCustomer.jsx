@@ -23,7 +23,7 @@ const AddCustomer = ({ onAdd, onCancel }) => {
     e.preventDefault()
 
     const newCustomer = {
-      id: `CUST-${Math.floor(Math.random() * 1000)}`, // simple random ID
+      id: `CUST-${Math.floor(Math.random() * 1000)}`,
       name: form.name,
       email: form.email,
       subscription: form.subscription,
