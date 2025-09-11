@@ -1,76 +1,112 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import FormInput from "../components/ui/FormInput";
-import FormSelect from "../components/ui/FormSelect";
+import React, { useState, useEffect } from "react";
+import { Plus, MoreVertical } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import MyButton from "../components/ui/MyButton";
+import DataTable from "../components/ui/DataTable";
+import ReusableDropdown from "../components/ui/ReusableDropdown";
 
-const AddProduct = () => {
+const Products = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    quantity: "",
-    price: "",
+  const location = useLocation();
+  const [products, setProducts] = useState([]);
 
-    status: "Active",
-    image: "",
-  });
-
-  const categories = ["Cleanser","Toner","Serum","Moisturizer","Sunscreen"];
-  const quantities = ["10","20","50","100","200"];
-  
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData({
-        ...formData,
-        image: URL.createObjectURL(file),
-      });
+  // Add new product if coming from AddProduct page
+  useEffect(() => {
+    if (location.state?.newProduct) {
+      setProducts((prev) => [
+        ...prev,
+        { id: prev.length + 1, ...location.state.newProduct },
+      ]);
+      navigate("/products", { replace: true });
     }
+  }, [location.state, navigate]);
+
+  // Update product
+  const handleUpdate = (updatedProduct) => {
+    const updatedProducts = products.map((p) =>
+      p.id === updatedProduct.id ? updatedProduct : p
+    );
+    setProducts(updatedProducts);
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    navigate("/products", { state: { newProduct: formData } });
+  // Delete product
+  const handleDelete = (id) => {
+    const updatedProducts = products.filter((p) => p.id !== id);
+    setProducts(updatedProducts);
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
   };
+
+  const columns = ["Product", "Category", "Quantity", "Price", "Actions"];
 
   return (
-    <div className="flex-1 p-6">
-      <h1 className="text-2xl font-bold mb-6">Add New Product</h1>
+    <div className="flex-1 p-6 bg-gray-50">
+      {/* Page header */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Manage Products</h1>
+        <MyButton onClick={() => navigate("/add-product")}>
+          <Plus className="w-4 h-4 inline-block mr-2" />
+          Add New Product
+        </MyButton>
+      </div>
 
-      <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6 space-y-4 max-w-2xl">
-        {/* Image Upload */}
-        <div>
-          <label className="block text-sm font-medium mb-2">Product Image</label>
-          <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-pink-500 transition">
-            {formData.image ? (
-              <img src={formData.image} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
-            ) : (
-              <label className="flex flex-col items-center gap-2 cursor-pointer">
-                <span className="text-gray-500">Click to upload or drag & drop</span>
-                <span className="text-xs text-gray-400">(PNG, JPG, GIF)</span>
-                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-              </label>
-            )}
-          </div>
-        </div>
-
-        <FormInput label="Product Name" name="name" value={formData.name} onChange={handleChange} required />
-        <FormSelect label="Category" name="category" value={formData.category} options={categories} onChange={handleChange} required />
-        <FormSelect label="Quantity" name="quantity" value={formData.quantity} options={quantities} onChange={handleChange} required />
-        <FormInput label="Price" type="number" name="price" value={formData.price} onChange={handleChange} required />
-       
-        <FormSelect label="Status" name="status" value={formData.status} options={["Active","Inactive"]} onChange={handleChange} />
-
-        <MyButton type="submit">Save Product</MyButton>
-      </form>
+      {/* Products Table */}
+      <div className="bg-white rounded-xl shadow overflow-hidden">
+        <DataTable columns={columns}>
+          {products.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className="p-6 text-center text-gray-500">
+                No products yet. Click <b>Add New Product</b> to create one.
+              </td>
+            </tr>
+          ) : (
+            products.map((p) => (
+              <tr key={p.id} className="border-b hover:bg-gray-50 transition-colors">
+                <td className="p-4 flex items-center gap-2">
+                  {p.image && (
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  )}
+                  {p.name}
+                </td>
+                <td className="p-4">{p.category}</td>
+                <td className="p-4">{p.quantity}</td>
+                <td className="p-4">{p.price}</td>
+                <td className="p-4 text-right">
+                  <ReusableDropdown
+                    trigger={
+                      <button className="p-2 hover:bg-gray-100 rounded-full">
+                        <MoreVertical />
+                      </button>
+                    }
+                    items={[
+                      {
+                        label: "Edit Product",
+                        onClick: () => navigate("/edit-product", { state: { product: p } }),
+                      },
+                      {
+                        label: "Delete Product",
+                        danger: true,
+                        confirm: {
+                          title: "Delete this product?",
+                          description: "This will permanently remove the product.",
+                          confirmLabel: "Delete",
+                          confirmAction: () => handleDelete(p.id),
+                        },
+                      },
+                    ]}
+                  />
+                </td>
+              </tr>
+            ))
+          )}
+        </DataTable>
+      </div>
     </div>
   );
 };
 
-export default AddProduct;
+export default Products;

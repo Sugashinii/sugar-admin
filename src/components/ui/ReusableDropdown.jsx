@@ -24,6 +24,7 @@ export default function ReusableDropdown({ trigger, items }) {
 
   return (
     <>
+      {/* Dropdown Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
         <DropdownMenuContent
@@ -58,6 +59,7 @@ export default function ReusableDropdown({ trigger, items }) {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* Alert Dialog for Confirmation */}
       <AlertDialog
         open={!!confirmItem}
         onOpenChange={() => setConfirmItem(null)}
@@ -76,11 +78,12 @@ export default function ReusableDropdown({ trigger, items }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                confirmItem?.confirm?.confirmAction?.()
+                // ✅ Call the actual onClick defined in your item (delete, cancel, etc.)
+                confirmItem?.onClick?.()
                 setConfirmItem(null)
               }}
             >
-              {confirmItem?.confirm?.confirmLabel || "Confirm"}
+              {confirmItem?.confirm?.actionText || "Confirm"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
