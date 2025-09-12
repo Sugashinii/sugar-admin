@@ -1,8 +1,7 @@
-// src/pages/Customers.jsx
 import React, { useState } from "react";
 import MyButton from "../components/ui/MyButton";
 import ReusableDropdown from "../components/ui/ReusableDropdown";
-import { MoreVertical, Plus } from "lucide-react"; // ✅ Added Plus icon
+import { MoreVertical, Plus } from "lucide-react";
 import AddCustomer from "./AddCustomer";
 import DataTable from "../components/ui/DataTable";
 
@@ -20,9 +19,9 @@ const Customers = () => {
     setCustomers((prev) => [...prev, customer]);
   };
 
-  const handleUpdate = (updatedRow) => {
+  const handleUpdate = (updatedCustomer) => {
     setCustomers((prev) =>
-      prev.map((c) => (c.id === updatedRow.id ? updatedRow : c))
+      prev.map((c) => (c.id === updatedCustomer.id ? updatedCustomer : c))
     );
   };
 
@@ -43,16 +42,14 @@ const Customers = () => {
 
   return (
     <div className="flex-1 p-6 bg-gray-50">
-      {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Customers</h1>
         <MyButton onClick={() => setShowAddForm(true)}>
-          <Plus className="w-4 h-4 inline-block mr-2" /> {/* ✅ Icon added */}
+          <Plus className="w-4 h-4 inline-block mr-2" />
           Add Customer
         </MyButton>
       </div>
 
-      {/* Customers Table */}
       <DataTable columns={columns}>
         {customers.length === 0 ? (
           <tr>
@@ -83,15 +80,20 @@ const Customers = () => {
                       confirm: {
                         title: "Block this customer?",
                         description: "They will not be able to log in anymore.",
-                        actionText: "Block",
+                        confirmLabel: "Block",
+                        confirmAction: () =>
+                          handleUpdate({ ...customer, status: "Inactive" }),
                       },
-                      onClick: () =>
-                        handleUpdate({ ...customer, status: "Inactive" }),
                     },
                     customer.status === "Inactive" && {
                       label: "Unblock User",
-                      onClick: () =>
-                        handleUpdate({ ...customer, status: "Active" }),
+                      confirm: {
+                        title: "Unblock this customer?",
+                        description: "They will be able to log in again.",
+                        confirmLabel: "Unblock",
+                        confirmAction: () =>
+                          handleUpdate({ ...customer, status: "Active" }),
+                      },
                     },
                     { separator: true },
                     {
@@ -100,9 +102,9 @@ const Customers = () => {
                       confirm: {
                         title: "Delete this customer?",
                         description: "This will permanently remove the customer record.",
-                        actionText: "Delete",
+                        confirmLabel: "Delete",
+                        confirmAction: () => handleDelete(customer.id),
                       },
-                      onClick: () => handleDelete(customer.id),
                     },
                   ].filter(Boolean)}
                 />

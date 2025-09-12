@@ -44,7 +44,6 @@ const AddCustomer = ({ onAdd, onCancel }) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             
-            {/* Name */}
             <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
               <Input
@@ -57,7 +56,6 @@ const AddCustomer = ({ onAdd, onCancel }) => {
               />
             </div>
 
-            {/* Email */}
             <div className="space-y-1">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -70,7 +68,6 @@ const AddCustomer = ({ onAdd, onCancel }) => {
               />
             </div>
 
-            {/* Subscription */}
             <div className="space-y-1">
               <Label>Subscription</Label>
               <Select
@@ -88,7 +85,6 @@ const AddCustomer = ({ onAdd, onCancel }) => {
               </Select>
             </div>
 
-            {/* Status */}
             <div className="space-y-1">
               <Label>Status</Label>
               <Select
@@ -105,7 +101,6 @@ const AddCustomer = ({ onAdd, onCancel }) => {
               </Select>
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-end gap-3 pt-4">
               <Button variant="outline" type="button" onClick={onCancel}>
                 Cancel

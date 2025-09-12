@@ -23,18 +23,11 @@ const Orders = () => {
   };
 
   const handleDelete = (orderToDelete) => {
-    // Reverted back to the standard window.confirm
-    const confirmDelete = window.confirm(
-      `Delete this order?\nThis will permanently remove the order with ID ${orderToDelete.id}.`
+    const updatedOrders = orders.filter(
+      (o) => String(o.id) !== String(orderToDelete.id)
     );
-    
-    if (confirmDelete) {
-      const updatedOrders = orders.filter(
-        (o) => String(o.id) !== String(orderToDelete.id)
-      );
-      setOrders(updatedOrders);
-      localStorage.setItem("orders", JSON.stringify(updatedOrders));
-    }
+    setOrders(updatedOrders);
+    localStorage.setItem("orders", JSON.stringify(updatedOrders));
   };
 
   const columns = ["Order ID", "Customer", "Order Date", "Amount", "Status", "Actions"];
@@ -48,6 +41,7 @@ const Orders = () => {
           Add New Order
         </MyButton>
       </div>
+
       <div className="bg-white rounded-xl shadow overflow-hidden">
         <DataTable columns={columns}>
           {orders.length === 0 ? (
@@ -98,7 +92,12 @@ const Orders = () => {
                       {
                         label: "Delete Order",
                         danger: true,
-                        onClick: () => handleDelete(order),
+                        confirm: {
+                          title: "Delete this order?",
+                          description: "This will permanently remove the order.",
+                          confirmLabel: "Delete",
+                          confirmAction: () => handleDelete(order),
+                        },
                       },
                     ].filter(Boolean)}
                   />

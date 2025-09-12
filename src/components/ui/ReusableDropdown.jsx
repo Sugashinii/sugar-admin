@@ -39,7 +39,7 @@ export default function ReusableDropdown({ trigger, items }) {
                 key={i}
                 onClick={() => {
                   if (item.confirm) {
-                    setConfirmItem(item)
+                    setConfirmItem(item) // show alert dialog
                   } else {
                     item.onClick?.()
                   }
@@ -59,7 +59,7 @@ export default function ReusableDropdown({ trigger, items }) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Alert Dialog for Confirmation */}
+      {/* Confirm Dialog */}
       <AlertDialog
         open={!!confirmItem}
         onOpenChange={() => setConfirmItem(null)}
@@ -78,12 +78,12 @@ export default function ReusableDropdown({ trigger, items }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                // ✅ Call the actual onClick defined in your item (delete, cancel, etc.)
-                confirmItem?.onClick?.()
+                // ✅ Call the confirmAction defined in your item
+                confirmItem?.confirm?.confirmAction?.()
                 setConfirmItem(null)
               }}
             >
-              {confirmItem?.confirm?.actionText || "Confirm"}
+              {confirmItem?.confirm?.confirmLabel || "Confirm"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
