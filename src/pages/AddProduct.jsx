@@ -13,13 +13,21 @@ const AddProduct = () => {
     category: "",
     quantity: "",
     price: "",
-    image: "",
+    imageFile: null,
+    imagePreview: "",
   });
 
   // Pre-fill form if editing
   useEffect(() => {
     if (editingProduct) {
-      setFormData(editingProduct);
+      setFormData({
+        name: editingProduct.name,
+        category: editingProduct.category,
+        quantity: editingProduct.quantity,
+        price: editingProduct.price,
+        imageFile: null,
+        imagePreview: editingProduct.image || "",
+      });
     }
   }, [editingProduct]);
 
@@ -31,9 +39,27 @@ const AddProduct = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        imageFile: file,
+        imagePreview: URL.createObjectURL(file),
+      }));
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/products", { state: { newProduct: formData } });
+
+    // If you want, you can convert image to base64 or upload to server here
+    const newProduct = {
+      ...formData,
+      image: formData.imagePreview,
+    };
+
+    navigate("/products", { state: { newProduct } });
   };
 
   return (
@@ -90,16 +116,26 @@ const AddProduct = () => {
           />
         </div>
 
+        {/* Image Upload */}
         <div>
-          <label className="block mb-1 font-medium">Image URL</label>
-          <input
-            type="text"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            placeholder="https://example.com/product.jpg"
-            className="w-full border rounded-lg p-2"
-          />
+          <label className="block mb-1 font-medium">Product Image</label>
+          <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:border-pink-500">
+            {formData.imagePreview ? (
+              <img
+                src={formData.imagePreview}
+                alt="Preview"
+                className="max-h-40 mb-2 rounded"
+              />
+            ) : (
+              <p className="text-gray-400">Click to select an image</p>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="absolute opacity-0 w-full h-full cursor-pointer"
+            />
+          </div>
         </div>
 
         <div className="flex justify-end gap-2">
