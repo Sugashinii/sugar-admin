@@ -1,36 +1,66 @@
-import React, { useState, useEffect } from "react";
-import MyButton from "../components/ui/MyButton";
-import { Plus, MoreVertical } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import DataTable from "../components/ui/DataTable";
-import ReusableDropdown from "../components/ui/ReusableDropdown";
+import React, { useState, useEffect } from "react"
+import MyButton from "../components/ui/MyButton"
+import { Plus, MoreVertical } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import DataTable from "../components/ui/DataTable"
+import ReusableDropdown from "../components/ui/ReusableDropdown"
+import { useToast } from "@/hooks/use-toast"   // 👈 import toast
 
 const Orders = () => {
-  const navigate = useNavigate();
-  const [orders, setOrders] = useState([]);
+  const navigate = useNavigate()
+  const { toast } = useToast()   // 👈 get toast
+  const [orders, setOrders] = useState([])
 
   useEffect(() => {
-    const savedOrders = JSON.parse(localStorage.getItem("orders")) || [];
-    setOrders(savedOrders);
-  }, []);
+    const savedOrders = JSON.parse(localStorage.getItem("orders")) || []
+    setOrders(savedOrders)
+  }, [])
 
   const handleUpdate = (updatedOrder) => {
     const updatedOrders = orders.map((o) =>
       o.id === updatedOrder.id ? updatedOrder : o
-    );
-    setOrders(updatedOrders);
-    localStorage.setItem("orders", JSON.stringify(updatedOrders));
-  };
+    )
+    setOrders(updatedOrders)
+    localStorage.setItem("orders", JSON.stringify(updatedOrders))
+
+    // ✅ Toast for status updates
+    if (updatedOrder.status === "Shipped") {
+      toast({
+        title: "Order Shipped 🚚",
+        description: `Order ${updatedOrder.id} has been shipped.`,
+        className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+      })
+    } else if (updatedOrder.status === "Delivered") {
+      toast({
+        title: "Order Delivered ✅",
+        description: `Order ${updatedOrder.id} has been delivered successfully.`,
+        className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+      })
+    } else if (updatedOrder.status === "Cancelled") {
+      toast({
+        title: "Order Cancelled ❌",
+        description: `Order ${updatedOrder.id} has been cancelled.`,
+        className: "bg-black text-pink-200 border-0 rounded-lg shadow-lg",
+      })
+    }
+  }
 
   const handleDelete = (orderToDelete) => {
     const updatedOrders = orders.filter(
       (o) => String(o.id) !== String(orderToDelete.id)
-    );
-    setOrders(updatedOrders);
-    localStorage.setItem("orders", JSON.stringify(updatedOrders));
-  };
+    )
+    setOrders(updatedOrders)
+    localStorage.setItem("orders", JSON.stringify(updatedOrders))
 
-  const columns = ["Order ID", "Customer", "Order Date", "Amount", "Status", "Actions"];
+    // ✅ Toast for delete
+    toast({
+      title: "Order Deleted ❌",
+      description: `Order ${orderToDelete.id} has been removed permanently.`,
+      className: "bg-black text-pink-200 border-0 rounded-lg shadow-lg",
+    })
+  }
+
+  const columns = ["Order ID", "Customer", "Order Date", "Amount", "Status", "Actions"]
 
   return (
     <div className="min-h-[80vh] w-full p-8 bg-gray-50">
@@ -108,7 +138,7 @@ const Orders = () => {
         </DataTable>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Orders;
+export default Orders

@@ -1,8 +1,8 @@
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { LogOut, LayoutDashboard, ShoppingCart, Package, Users, Settings } from "lucide-react"
 import { logout } from "../utils/auth"
+import { useToast } from "@/hooks/use-toast"  // 👈 import toast
 
-// import your AlertDialog components
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -18,9 +18,15 @@ import {
 export default function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { toast } = useToast()  // 👈 get toast
 
   const handleLogout = () => {
     logout()
+    toast({
+      title: "Logged Out ✅",
+      description: "You have successfully logged out.",
+      className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+    })
     navigate("/")
   }
 
@@ -34,7 +40,6 @@ export default function Sidebar() {
 
   return (
     <div className="w-64 h-screen fixed left-0 top-0 bg-white border-r shadow-lg flex flex-col justify-between p-4">
-      
       <div>
         <h1 className="text-2xl font-bold text-rose-600 mb-8 px-2">Sugar Admin</h1>
         <nav className="flex flex-col space-y-2">
@@ -74,7 +79,6 @@ export default function Sidebar() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              {/* ✅ Confirm logout */}
               <AlertDialogAction onClick={handleLogout}>
                 Logout
               </AlertDialogAction>

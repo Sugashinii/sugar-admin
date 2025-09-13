@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"   // 👈 import toast hook
 
 const AddCustomer = ({ onAdd, onCancel }) => {
   const [form, setForm] = useState({
@@ -14,6 +15,8 @@ const AddCustomer = ({ onAdd, onCancel }) => {
     subscription: "Silver",
     status: "Active",
   })
+
+  const { toast } = useToast()   // 👈 get toast function
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -32,6 +35,14 @@ const AddCustomer = ({ onAdd, onCancel }) => {
     }
 
     onAdd(newCustomer)
+
+    // ✅ Success toast styled with Sugar Cosmetics palette
+    toast({
+      title: "Customer Added 🎉",
+      description: `${form.name} has been added successfully!`,
+      className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+    })
+
     onCancel()
   }
 

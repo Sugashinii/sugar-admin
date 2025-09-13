@@ -1,12 +1,13 @@
-// src/pages/AddProduct.jsx
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import MyButton from "../components/ui/MyButton";
+import React, { useState, useEffect } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import MyButton from "../components/ui/MyButton"
+import { useToast } from "@/hooks/use-toast"   // 👈 Sugar-style toast
 
 const AddProduct = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const editingProduct = location.state?.product || null;
+  const navigate = useNavigate()
+  const location = useLocation()
+  const editingProduct = location.state?.product || null
+  const { toast } = useToast()
 
   const [formData, setFormData] = useState({
     name: "",
@@ -15,7 +16,7 @@ const AddProduct = () => {
     price: "",
     imageFile: null,
     imagePreview: "",
-  });
+  })
 
   // Pre-fill form if editing
   useEffect(() => {
@@ -27,40 +28,45 @@ const AddProduct = () => {
         price: editingProduct.price,
         imageFile: null,
         imagePreview: editingProduct.image || "",
-      });
+      })
     }
-  }, [editingProduct]);
+  }, [editingProduct])
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]
     if (file) {
       setFormData((prev) => ({
         ...prev,
         imageFile: file,
         imagePreview: URL.createObjectURL(file),
-      }));
+      }))
     }
-  };
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    // If you want, you can convert image to base64 or upload to server here
     const newProduct = {
       ...formData,
       image: formData.imagePreview,
-    };
+    }
 
-    navigate("/products", { state: { newProduct } });
-  };
+    // ✅ Show toast for add/update
+    toast({
+      title: editingProduct ? "Product Updated ✅" : "Product Added 🎉",
+      description: editingProduct
+        ? `${newProduct.name} has been updated successfully.`
+        : `${newProduct.name} has been added successfully.`,
+      className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+    })
+
+    navigate("/products", { state: { newProduct } })
+  }
 
   return (
     <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
@@ -116,26 +122,23 @@ const AddProduct = () => {
           />
         </div>
 
-        {/* Image Upload */}
-        <div>
-          <label className="block mb-1 font-medium">Product Image</label>
-          <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:border-pink-500">
-            {formData.imagePreview ? (
-              <img
-                src={formData.imagePreview}
-                alt="Preview"
-                className="max-h-40 mb-2 rounded"
-              />
-            ) : (
-              <p className="text-gray-400">Click to select an image</p>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="absolute opacity-0 w-full h-full cursor-pointer"
+        {/* Image Upload – Fixed */}
+        <div className="relative flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:border-pink-500 mb-4">
+          {formData.imagePreview ? (
+            <img
+              src={formData.imagePreview}
+              alt="Preview"
+              className="max-h-40 mb-2 rounded"
             />
-          </div>
+          ) : (
+            <p className="text-gray-400">Click to select an image</p>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
         </div>
 
         <div className="flex justify-end gap-2">
@@ -148,7 +151,7 @@ const AddProduct = () => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default AddProduct;
+export default AddProduct

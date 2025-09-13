@@ -1,33 +1,47 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { login } from "../utils/auth"
+import { useToast } from "@/hooks/use-toast"
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    const hardUser = "admin"
-    const hardPass = "1234"
+    const name = "admin"
+    const pass = "1234"
 
-    if (username === hardUser && password === hardPass) {
+    if (username === name && password === pass) {
       login("fake-token")
-      onLogin?.()         
+      onLogin?.()  
+
+      // ✅ success toast styled with Sugar pink
+      toast({
+        title: "Login Successful 🎉",
+        description: "Welcome back, Sugar Admin!",
+        className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+      })
+
       navigate("/dashboard")
     } else {
       setError("Invalid username or password ❌")
+
+      // ❌ error toast styled with black + pink
+      toast({
+        title: "Login Failed",
+        description: "Invalid username or password.",
+        className: "bg-black text-pink-200 border-0 rounded-lg shadow-lg",
+      })
     }
   }
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-gray-200 relative">
-    
-     
-
+    <div className="h-screen w-screen flex items-center justify-center">
       <form 
         onSubmit={handleSubmit} 
         className="relative z-10 bg-white p-8 rounded-2xl shadow-lg w-80"

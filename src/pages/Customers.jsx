@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import MyButton from "../components/ui/MyButton";
-import ReusableDropdown from "../components/ui/ReusableDropdown";
-import { MoreVertical, Plus } from "lucide-react";
-import AddCustomer from "./AddCustomer";
-import DataTable from "../components/ui/DataTable";
+import React, { useState } from "react"
+import MyButton from "../components/ui/MyButton"
+import ReusableDropdown from "../components/ui/ReusableDropdown"
+import { MoreVertical, Plus } from "lucide-react"
+import AddCustomer from "./AddCustomer"
+import DataTable from "../components/ui/DataTable"
+import { useToast } from "@/hooks/use-toast"   // 👈 import toast
 
 const Customers = () => {
   const [customers, setCustomers] = useState([
@@ -11,23 +12,49 @@ const Customers = () => {
     { id: "CUST-102", name: "Bullet Pandi", email: "bullet@example.com", subscription: "Silver", invoices: 1, status: "Inactive" },
     { id: "CUST-103", name: "Kaipulla", email: "kaipulla@example.com", subscription: "Platinum", invoices: 5, status: "Active" },
     { id: "CUST-104", name: "Alert Aarumugam", email: "alert@example.com", subscription: "Gold", invoices: 2, status: "Inactive" },
-  ]);
+  ])
 
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false)
+  const { toast } = useToast()   // 👈 use toast hook
 
   const handleAddCustomer = (customer) => {
-    setCustomers((prev) => [...prev, customer]);
-  };
+    setCustomers((prev) => [...prev, customer])
+  }
 
   const handleUpdate = (updatedCustomer) => {
     setCustomers((prev) =>
       prev.map((c) => (c.id === updatedCustomer.id ? updatedCustomer : c))
-    );
-  };
+    )
+
+    // ✅ Toast for block/unblock
+    if (updatedCustomer.status === "Inactive") {
+      toast({
+        title: "Customer Blocked 🚫",
+        description: `${updatedCustomer.name} has been blocked.`,
+        className: "bg-black text-pink-200 border-0 rounded-lg shadow-lg",
+      })
+    } else if (updatedCustomer.status === "Active") {
+      toast({
+        title: "Customer Unblocked ✅",
+        description: `${updatedCustomer.name} is active again.`,
+        className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+      })
+    }
+  }
 
   const handleDelete = (id) => {
-    setCustomers((prev) => prev.filter((c) => c.id !== id));
-  };
+    const deletedCustomer = customers.find((c) => c.id === id)
+    setCustomers((prev) => prev.filter((c) => c.id !== id))
+
+    // ✅ Toast for delete
+    if (deletedCustomer) {
+      toast({
+        title: "Customer Deleted ❌",
+        description: `${deletedCustomer.name} has been removed permanently.`,
+        className: "bg-black text-pink-200 border-0 rounded-lg shadow-lg",
+      })
+    }
+  }
 
   if (showAddForm) {
     return (
@@ -35,10 +62,10 @@ const Customers = () => {
         onAdd={handleAddCustomer}
         onCancel={() => setShowAddForm(false)}
       />
-    );
+    )
   }
 
-  const columns = ["ID", "Name", "Email", "Subscription", "Invoices", "Status", "Actions"];
+  const columns = ["ID", "Name", "Email", "Subscription", "Invoices", "Status", "Actions"]
 
   return (
     <div className="flex-1 p-6 bg-gray-50">
@@ -114,7 +141,7 @@ const Customers = () => {
         )}
       </DataTable>
     </div>
-  );
-};
+  )
+}
 
-export default Customers;
+export default Customers

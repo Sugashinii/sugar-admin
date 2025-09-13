@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { Button } from "@/components/ui/button"
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover";
+} from "@/components/ui/popover"
 import {
   Command,
   CommandInput,
@@ -13,42 +13,44 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-} from "@/components/ui/command";
+} from "@/components/ui/command"
+import { useToast } from "@/hooks/use-toast"   // 👈 import toast
 
 const AddOrder = () => {
-  const navigate = useNavigate();
-  const [customerName, setCustomerName] = useState("");
-  const [orderItems, setOrderItems] = useState([{ name: "", quantity: 1, price: 0 }]);
+  const navigate = useNavigate()
+  const [customerName, setCustomerName] = useState("")
+  const [orderItems, setOrderItems] = useState([{ name: "", quantity: 1, price: 0 }])
+  const { toast } = useToast()   // 👈 get toast
 
   const products = [
     { name: "Lipstick", price: 250 },
     { name: "Eyeliner", price: 150 },
     { name: "Face Wash", price: 300 },
     { name: "Moisturizer", price: 500 },
-  ];
+  ]
 
   const handleProductChange = (index, field, value) => {
-    const updatedItems = [...orderItems];
-    updatedItems[index][field] = value;
+    const updatedItems = [...orderItems]
+    updatedItems[index][field] = value
     if (field === "name") {
-      const product = products.find((p) => p.name === value);
-      updatedItems[index].price = product ? product.price : 0;
+      const product = products.find((p) => p.name === value)
+      updatedItems[index].price = product ? product.price : 0
     }
-    setOrderItems(updatedItems);
-  };
+    setOrderItems(updatedItems)
+  }
 
   const handleAddProduct = () => {
-    setOrderItems([...orderItems, { name: "", quantity: 1, price: 0 }]);
-  };
+    setOrderItems([...orderItems, { name: "", quantity: 1, price: 0 }])
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const existingOrders = JSON.parse(localStorage.getItem("orders")) || [];
+    e.preventDefault()
+    const existingOrders = JSON.parse(localStorage.getItem("orders")) || []
 
     const nextId =
       existingOrders.length > 0
         ? "ORD-" + (parseInt(existingOrders[existingOrders.length - 1].id.split("-")[1]) + 1)
-        : "ORD-101";
+        : "ORD-101"
 
     const newOrder = {
       id: nextId,
@@ -56,12 +58,20 @@ const AddOrder = () => {
       orderItems,
       status: "Pending",
       date: new Date().toLocaleDateString(),
-    };
+    }
 
-    const updatedOrders = [...existingOrders, newOrder];
-    localStorage.setItem("orders", JSON.stringify(updatedOrders));
-    navigate("/orders");
-  };
+    const updatedOrders = [...existingOrders, newOrder]
+    localStorage.setItem("orders", JSON.stringify(updatedOrders))
+
+    // ✅ Toast for new order
+    toast({
+      title: "Order Created 🎉",
+      description: `Order for ${customerName} has been successfully created!`,
+      className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+    })
+
+    navigate("/orders")
+  }
 
   return (
     <div className="min-h-[80vh] max-w-2xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow-lg">
@@ -154,7 +164,7 @@ const AddOrder = () => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default AddOrder;
+export default AddOrder
