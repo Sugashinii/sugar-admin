@@ -4,16 +4,16 @@ import { useLocation, useNavigate } from "react-router-dom"
 import MyButton from "../components/ui/MyButton"
 import DataTable from "../components/ui/DataTable"
 import ReusableDropdown from "../components/ui/ReusableDropdown"
-import { useToast } from "@/hooks/use-toast"  // 👈 import toast
+import { useToast } from "@/hooks/use-toast"  
 
 const Products = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { toast } = useToast()  // 👈 get toast
+  const { toast } = useToast()  
 
   const [products, setProducts] = useState([])
 
-  // Load products from localStorage
+  
   useEffect(() => {
     const stored = localStorage.getItem("products")
     if (stored) {
@@ -21,7 +21,7 @@ const Products = () => {
     }
   }, [])
 
-  // Add or Update product if coming from AddProduct page
+
   useEffect(() => {
     if (location.state?.newProduct) {
       setProducts((prev) => {
@@ -31,7 +31,7 @@ const Products = () => {
         )
 
         if (existingIndex >= 0) {
-          // Update product
+   
           updated = [...prev]
           updated[existingIndex] = location.state.newProduct
 
@@ -41,7 +41,7 @@ const Products = () => {
             className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
           })
         } else {
-          // Add new product
+      
           updated = [...prev, { id: prev.length + 1, ...location.state.newProduct }]
 
           toast({
@@ -58,7 +58,7 @@ const Products = () => {
     }
   }, [location.state, navigate, toast])
 
-  // Delete product
+ 
   const handleDelete = (id) => {
     const updatedProducts = products.filter((p) => p.id !== id)
     setProducts(updatedProducts)

@@ -143,7 +143,7 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-          {/* Product Settings Tab */}
+      
           <TabsContent value="product">
             <Card className="shadow-md rounded-xl">
               <CardHeader>
@@ -205,7 +205,7 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-          {/* Marketing Settings Tab */}
+         
           <TabsContent value="marketing">
             <Card className="shadow-md rounded-xl">
               <CardHeader>
@@ -237,7 +237,6 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-          {/* Security Settings Tab */}
           <TabsContent value="security">
             <Card className="shadow-md rounded-xl">
               <CardHeader>
@@ -259,7 +258,7 @@ export default function AdminSettingsPage() {
           </TabsContent>
         </Tabs>
 
-        {/* Action Buttons */}
+     
         <div className="mt-8 flex gap-4">
           <MyButton onClick={handleSave} className="flex-1">
             Save Changes

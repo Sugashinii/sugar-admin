@@ -9,12 +9,23 @@ const AddProduct = () => {
   const editingProduct = location.state?.product || null
   const { toast } = useToast()
 
+  // ✅ Static category list
+  const categories = [
+    "Electronics",
+    "Clothing",
+    "Grocery",
+    "Furniture",
+    "Books",
+    "Toys",
+    "Sports",
+  ]
+
   const [formData, setFormData] = useState({
     name: "",
     category: "",
     quantity: "",
     price: "",
-    minQuantity: "", // ✅ NEW FIELD
+    minQuantity: "",
     imageFile: null,
     imagePreview: "",
   })
@@ -27,7 +38,7 @@ const AddProduct = () => {
         category: editingProduct.category,
         quantity: editingProduct.quantity,
         price: editingProduct.price,
-        minQuantity: editingProduct.minQuantity || "", // ✅ Pre-fill if available
+        minQuantity: editingProduct.minQuantity || "",
         imageFile: null,
         imagePreview: editingProduct.image || "",
       })
@@ -85,6 +96,7 @@ const AddProduct = () => {
         {editingProduct ? "Edit Product" : "Add New Product"}
       </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
+
         <div>
           <label className="block mb-1 font-medium">Product Name</label>
           <input
@@ -97,18 +109,28 @@ const AddProduct = () => {
           />
         </div>
 
+       
         <div>
           <label className="block mb-1 font-medium">Category</label>
-          <input
-            type="text"
+          <select
             name="category"
             value={formData.category}
             onChange={handleChange}
             required
             className="w-full border rounded-lg p-2"
-          />
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
         </div>
 
+      
         <div>
           <label className="block mb-1 font-medium">Quantity</label>
           <input
@@ -121,7 +143,7 @@ const AddProduct = () => {
           />
         </div>
 
-        {/* ✅ Minimum Quantity */}
+       
         <div>
           <label className="block mb-1 font-medium">Minimum Quantity</label>
           <input
@@ -134,6 +156,7 @@ const AddProduct = () => {
           />
         </div>
 
+     
         <div>
           <label className="block mb-1 font-medium">Price</label>
           <input
@@ -146,7 +169,7 @@ const AddProduct = () => {
           />
         </div>
 
-        {/* Image Upload */}
+     
         <div className="relative flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:border-pink-500 mb-4">
           {formData.imagePreview ? (
             <img
@@ -165,6 +188,7 @@ const AddProduct = () => {
           />
         </div>
 
+        {/* Buttons */}
         <div className="flex justify-end gap-2">
           <MyButton type="button" onClick={() => navigate("/products")}>
             Cancel

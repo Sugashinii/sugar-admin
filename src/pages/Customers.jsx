@@ -18,7 +18,7 @@ const Customers = () => {
   const { toast } = useToast()
 
   const handleAddCustomer = (customer) => {
-    // Avoid duplicate insertion if it's already chosen
+ 
     if (customers.some((c) => c.id === customer.id)) {
       toast({
         title: "Customer Already Exists ⚠️",
@@ -55,7 +55,7 @@ const Customers = () => {
       <AddCustomer
         onAdd={handleAddCustomer}
         onCancel={() => setShowAddForm(false)}
-        existingCustomers={customers} // pass customers for duplicate suggestion
+        existingCustomers={customers} 
       />
     )
   }

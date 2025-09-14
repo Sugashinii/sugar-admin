@@ -23,7 +23,7 @@ const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
     setForm({ ...form, [name]: value })
   }
 
-  // Watch for name changes to suggest duplicates
+  
   useEffect(() => {
     if (form.name.trim()) {
       const match = existingCustomers.find(
@@ -96,7 +96,7 @@ const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
 
-            {/* Name */}
+     
             <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
               <Input
@@ -109,7 +109,6 @@ const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
               />
             </div>
 
-            {/* Suggestion if duplicate */}
             {suggestedCustomer && (
               <div className="p-3 bg-yellow-50 border border-yellow-300 rounded-md">
                 <p className="text-sm text-yellow-700">
@@ -131,7 +130,7 @@ const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
               </div>
             )}
 
-            {/* Email */}
+
             <div className="space-y-1">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -144,7 +143,7 @@ const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
               />
             </div>
 
-            {/* Phone */}
+  
             <div className="space-y-1">
               <Label htmlFor="phone">Phone</Label>
               <Input
@@ -157,7 +156,6 @@ const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
               />
             </div>
 
-            {/* Address */}
             <div className="space-y-1">
               <Label htmlFor="address">Address</Label>
               <Input
@@ -170,7 +168,7 @@ const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
               />
             </div>
 
-            {/* Buttons */}
+          
             <div className="flex justify-end gap-3 pt-4">
               <Button variant="outline" type="button" onClick={onCancel}>
                 Cancel

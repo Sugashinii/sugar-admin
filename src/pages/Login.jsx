@@ -20,7 +20,6 @@ export default function Login({ onLogin }) {
       login("fake-token")
       onLogin?.()  
 
-      // ✅ success toast styled with Sugar pink
       toast({
         title: "Login Successful 🎉",
         description: "Welcome back, Sugar Admin!",
@@ -31,7 +30,7 @@ export default function Login({ onLogin }) {
     } else {
       setError("Invalid username or password ❌")
 
-      // ❌ error toast styled with black + pink
+    
       toast({
         title: "Login Failed",
         description: "Invalid username or password.",

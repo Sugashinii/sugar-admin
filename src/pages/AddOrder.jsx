@@ -31,7 +31,6 @@ const AddOrder = () => {
 
   const savedCustomers = JSON.parse(localStorage.getItem("customers")) || []
 
-  // calculate total
   const totalAmount = orderItems.reduce((sum, item) => {
     const product = products.find((p) => p.id === Number(item.productId))
     return sum + (product ? product.price * item.quantity : 0)
@@ -53,7 +52,7 @@ const AddOrder = () => {
     setOrderItems(newItems)
   }
 
-  // 🔹 Customer name input with suggestions
+
   const handleCustomerInput = (e) => {
     const value = e.target.value
     setCustomerName(value)
@@ -68,7 +67,6 @@ const AddOrder = () => {
     }
   }
 
-  // 🔹 Autofill when selecting a suggestion
   const handleSelectCustomer = (cust) => {
     setCustomerName(cust.name)
     setEmail(cust.email || "")
@@ -178,7 +176,6 @@ const AddOrder = () => {
               )}
             </div>
 
-            {/* Auto-filled fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Email</Label>
@@ -194,7 +191,7 @@ const AddOrder = () => {
               <Input value={address} onChange={(e) => setAddress(e.target.value)} />
             </div>
 
-            {/* Product List */}
+        
             <div className="space-y-4">
               <Label>Products</Label>
               {orderItems.map((item, index) => (
@@ -234,7 +231,6 @@ const AddOrder = () => {
               </Button>
             </div>
 
-            {/* Submit */}
             <div className="flex justify-end">
               <Button type="submit">Submit</Button>
             </div>
@@ -242,7 +238,7 @@ const AddOrder = () => {
         </CardContent>
       </Card>
 
-      {/* Payment Dialog */}
+
       <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
         <DialogContent>
           <DialogHeader>
