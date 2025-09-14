@@ -48,7 +48,7 @@ export default function ReusableDropdown({ trigger, items }) {
                   ${
                     item.danger
                       ? "text-red-600 hover:bg-red-50 focus:bg-red-100"
-                      : "text-gray-700 hover:bg-gray-100 focus:bg-gray-200"
+                      : " hover:bg-gray-100 "
                   }
                 `}
               >

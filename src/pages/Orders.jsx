@@ -4,11 +4,11 @@ import { Plus, MoreVertical } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import DataTable from "../components/ui/DataTable"
 import ReusableDropdown from "../components/ui/ReusableDropdown"
-import { useToast } from "@/hooks/use-toast"   // 👈 import toast
+import { useToast } from "@/hooks/use-toast"
 
 const Orders = () => {
   const navigate = useNavigate()
-  const { toast } = useToast()   // 👈 get toast
+  const { toast } = useToast()
   const [orders, setOrders] = useState([])
 
   useEffect(() => {
@@ -23,7 +23,6 @@ const Orders = () => {
     setOrders(updatedOrders)
     localStorage.setItem("orders", JSON.stringify(updatedOrders))
 
-    // ✅ Toast for status updates
     if (updatedOrder.status === "Shipped") {
       toast({
         title: "Order Shipped 🚚",
@@ -46,13 +45,10 @@ const Orders = () => {
   }
 
   const handleDelete = (orderToDelete) => {
-    const updatedOrders = orders.filter(
-      (o) => String(o.id) !== String(orderToDelete.id)
-    )
+    const updatedOrders = orders.filter((o) => String(o.id) !== String(orderToDelete.id))
     setOrders(updatedOrders)
     localStorage.setItem("orders", JSON.stringify(updatedOrders))
 
-    // ✅ Toast for delete
     toast({
       title: "Order Deleted ❌",
       description: `Order ${orderToDelete.id} has been removed permanently.`,
@@ -89,7 +85,7 @@ const Orders = () => {
                 <td className="p-4">
                   ₹
                   {(order.orderItems || []).reduce(
-                    (total, item) => total + item.price * item.quantity,
+                    (total, item) => total + (item.price || 0) * item.quantity,
                     0
                   )}
                 </td>
@@ -104,19 +100,16 @@ const Orders = () => {
                     items={[
                       order.status === "Pending" && {
                         label: "Mark as Shipped",
-                        onClick: () =>
-                          handleUpdate({ ...order, status: "Shipped" }),
+                        onClick: () => handleUpdate({ ...order, status: "Shipped" }),
                       },
                       order.status === "Shipped" && {
                         label: "Mark as Delivered",
-                        onClick: () =>
-                          handleUpdate({ ...order, status: "Delivered" }),
+                        onClick: () => handleUpdate({ ...order, status: "Delivered" }),
                       },
                       order.status === "Pending" && {
                         label: "Cancel Order",
                         danger: true,
-                        onClick: () =>
-                          handleUpdate({ ...order, status: "Cancelled" }),
+                        onClick: () => handleUpdate({ ...order, status: "Cancelled" }),
                       },
                       { separator: true },
                       {

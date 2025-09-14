@@ -1,48 +1,89 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"   // 👈 import toast hook
+import { useToast } from "@/hooks/use-toast"
 
-const AddCustomer = ({ onAdd, onCancel }) => {
+const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    subscription: "Silver",
-    status: "Active",
+    phone: "",
+    address: "",
   })
 
-  const { toast } = useToast()   // 👈 get toast function
+  const [suggestedCustomer, setSuggestedCustomer] = useState(null)
+  const { toast } = useToast()
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setForm({ ...form, [name]: value })
+  }
+
+  // Watch for name changes to suggest duplicates
+  useEffect(() => {
+    if (form.name.trim()) {
+      const match = existingCustomers.find(
+        (c) =>
+          c.name.toLowerCase().includes(form.name.toLowerCase()) ||
+          c.address.toLowerCase().includes(form.name.toLowerCase())
+      )
+      setSuggestedCustomer(match || null)
+    } else {
+      setSuggestedCustomer(null)
+    }
+  }, [form.name, existingCustomers])
+
+  const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(form.email)) {
+      toast({
+        title: "Invalid Email ❌",
+        description: "Please enter a valid email address.",
+        className: "bg-red-500 text-white rounded-lg",
+      })
+      return false
+    }
+
+    const phoneRegex = /^[0-9]{10}$/
+    if (!phoneRegex.test(form.phone)) {
+      toast({
+        title: "Invalid Phone Number 📱",
+        description: "Phone number must be exactly 10 digits.",
+        className: "bg-red-500 text-white rounded-lg",
+      })
+      return false
+    }
+
+    if (!form.address.trim()) {
+      toast({
+        title: "Missing Address 🏠",
+        description: "Please enter the customer’s address.",
+        className: "bg-red-500 text-white rounded-lg",
+      })
+      return false
+    }
+
+    return true
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (!validateForm()) return
 
     const newCustomer = {
       id: `CUST-${Math.floor(Math.random() * 1000)}`,
       name: form.name,
       email: form.email,
-      subscription: form.subscription,
+      phone: form.phone,
+      address: form.address,
       invoices: 0,
-      status: form.status,
     }
 
     onAdd(newCustomer)
-
-    // ✅ Success toast styled with Sugar Cosmetics palette
-    toast({
-      title: "Customer Added 🎉",
-      description: `${form.name} has been added successfully!`,
-      className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
-    })
-
     onCancel()
   }
 
@@ -54,7 +95,8 @@ const AddCustomer = ({ onAdd, onCancel }) => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            
+
+            {/* Name */}
             <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
               <Input
@@ -67,6 +109,29 @@ const AddCustomer = ({ onAdd, onCancel }) => {
               />
             </div>
 
+            {/* Suggestion if duplicate */}
+            {suggestedCustomer && (
+              <div className="p-3 bg-yellow-50 border border-yellow-300 rounded-md">
+                <p className="text-sm text-yellow-700">
+                  Did you mean: <b>{suggestedCustomer.name}</b>,{" "}
+                  {suggestedCustomer.address}?
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      onAdd(suggestedCustomer)
+                      onCancel()
+                    }}
+                  >
+                    Use This Customer
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Email */}
             <div className="space-y-1">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -79,39 +144,33 @@ const AddCustomer = ({ onAdd, onCancel }) => {
               />
             </div>
 
+            {/* Phone */}
             <div className="space-y-1">
-              <Label>Subscription</Label>
-              <Select
-                value={form.subscription}
-                onValueChange={(value) => setForm({ ...form, subscription: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a plan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Silver">Silver</SelectItem>
-                  <SelectItem value="Gold">Gold</SelectItem>
-                  <SelectItem value="Platinum">Platinum</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                name="phone"
+                type="text"
+                value={form.phone}
+                onChange={handleChange}
+                required
+              />
             </div>
 
+            {/* Address */}
             <div className="space-y-1">
-              <Label>Status</Label>
-              <Select
-                value={form.status}
-                onValueChange={(value) => setForm({ ...form, status: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="address">Address</Label>
+              <Input
+                id="address"
+                name="address"
+                type="text"
+                value={form.address}
+                onChange={handleChange}
+                required
+              />
             </div>
 
+            {/* Buttons */}
             <div className="flex justify-end gap-3 pt-4">
               <Button variant="outline" type="button" onClick={onCancel}>
                 Cancel

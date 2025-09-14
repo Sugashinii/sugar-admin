@@ -4,49 +4,43 @@ import ReusableDropdown from "../components/ui/ReusableDropdown"
 import { MoreVertical, Plus } from "lucide-react"
 import AddCustomer from "./AddCustomer"
 import DataTable from "../components/ui/DataTable"
-import { useToast } from "@/hooks/use-toast"   // 👈 import toast
+import { useToast } from "@/hooks/use-toast"
 
 const Customers = () => {
   const [customers, setCustomers] = useState([
-    { id: "CUST-101", name: "Body Soda", email: "body@example.com", subscription: "Gold", invoices: 3, status: "Active" },
-    { id: "CUST-102", name: "Bullet Pandi", email: "bullet@example.com", subscription: "Silver", invoices: 1, status: "Inactive" },
-    { id: "CUST-103", name: "Kaipulla", email: "kaipulla@example.com", subscription: "Platinum", invoices: 5, status: "Active" },
-    { id: "CUST-104", name: "Alert Aarumugam", email: "alert@example.com", subscription: "Gold", invoices: 2, status: "Inactive" },
+    { id: "CUST-101", name: "Body Soda", email: "body@example.com", phone: "9876543210", address: "Chennai", invoices: 3 },
+    { id: "CUST-102", name: "Bullet Pandi", email: "bullet@example.com", phone: "9123456780", address: "Madurai", invoices: 1 },
+    { id: "CUST-103", name: "Kaipulla", email: "kaipulla@example.com", phone: "9988776655", address: "Coimbatore", invoices: 5 },
+    { id: "CUST-104", name: "Alert Aarumugam", email: "alert@example.com", phone: "9090909090", address: "Salem", invoices: 2 },
   ])
 
   const [showAddForm, setShowAddForm] = useState(false)
-  const { toast } = useToast()   // 👈 use toast hook
+  const { toast } = useToast()
 
   const handleAddCustomer = (customer) => {
-    setCustomers((prev) => [...prev, customer])
-  }
-
-  const handleUpdate = (updatedCustomer) => {
-    setCustomers((prev) =>
-      prev.map((c) => (c.id === updatedCustomer.id ? updatedCustomer : c))
-    )
-
-    // ✅ Toast for block/unblock
-    if (updatedCustomer.status === "Inactive") {
+    // Avoid duplicate insertion if it's already chosen
+    if (customers.some((c) => c.id === customer.id)) {
       toast({
-        title: "Customer Blocked 🚫",
-        description: `${updatedCustomer.name} has been blocked.`,
-        className: "bg-black text-pink-200 border-0 rounded-lg shadow-lg",
+        title: "Customer Already Exists ⚠️",
+        description: `${customer.name} is already in the list.`,
+        className: "bg-yellow-500 text-white border-0 rounded-lg shadow-lg",
       })
-    } else if (updatedCustomer.status === "Active") {
-      toast({
-        title: "Customer Unblocked ✅",
-        description: `${updatedCustomer.name} is active again.`,
-        className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
-      })
+      return
     }
+
+    setCustomers((prev) => [...prev, customer])
+
+    toast({
+      title: "Customer Added 🎉",
+      description: `${customer.name} has been added successfully!`,
+      className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+    })
   }
 
   const handleDelete = (id) => {
     const deletedCustomer = customers.find((c) => c.id === id)
     setCustomers((prev) => prev.filter((c) => c.id !== id))
 
-    // ✅ Toast for delete
     if (deletedCustomer) {
       toast({
         title: "Customer Deleted ❌",
@@ -61,11 +55,12 @@ const Customers = () => {
       <AddCustomer
         onAdd={handleAddCustomer}
         onCancel={() => setShowAddForm(false)}
+        existingCustomers={customers} // pass customers for duplicate suggestion
       />
     )
   }
 
-  const columns = ["ID", "Name", "Email", "Subscription", "Invoices", "Status", "Actions"]
+  const columns = ["ID", "Name", "Email", "Phone", "Address", "Invoices", "Actions"]
 
   return (
     <div className="flex-1 p-6 bg-gray-50">
@@ -90,9 +85,9 @@ const Customers = () => {
               <td className="p-4">{customer.id}</td>
               <td className="p-4">{customer.name}</td>
               <td className="p-4">{customer.email}</td>
-              <td className="p-4">{customer.subscription}</td>
+              <td className="p-4">{customer.phone}</td>
+              <td className="p-4">{customer.address}</td>
               <td className="p-4">{customer.invoices}</td>
-              <td className="p-4">{customer.status}</td>
               <td className="p-4 text-right">
                 <ReusableDropdown
                   trigger={
@@ -101,28 +96,6 @@ const Customers = () => {
                     </button>
                   }
                   items={[
-                    customer.status === "Active" && {
-                      label: "Block User",
-                      danger: true,
-                      confirm: {
-                        title: "Block this customer?",
-                        description: "They will not be able to log in anymore.",
-                        confirmLabel: "Block",
-                        confirmAction: () =>
-                          handleUpdate({ ...customer, status: "Inactive" }),
-                      },
-                    },
-                    customer.status === "Inactive" && {
-                      label: "Unblock User",
-                      confirm: {
-                        title: "Unblock this customer?",
-                        description: "They will be able to log in again.",
-                        confirmLabel: "Unblock",
-                        confirmAction: () =>
-                          handleUpdate({ ...customer, status: "Active" }),
-                      },
-                    },
-                    { separator: true },
                     {
                       label: "Delete Customer",
                       danger: true,
@@ -133,7 +106,7 @@ const Customers = () => {
                         confirmAction: () => handleDelete(customer.id),
                       },
                     },
-                  ].filter(Boolean)}
+                  ]}
                 />
               </td>
             </tr>

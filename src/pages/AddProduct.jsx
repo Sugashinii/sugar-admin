@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import MyButton from "../components/ui/MyButton"
-import { useToast } from "@/hooks/use-toast"   // 👈 Sugar-style toast
+import { useToast } from "@/hooks/use-toast"
 
 const AddProduct = () => {
   const navigate = useNavigate()
@@ -14,6 +14,7 @@ const AddProduct = () => {
     category: "",
     quantity: "",
     price: "",
+    minQuantity: "", // ✅ NEW FIELD
     imageFile: null,
     imagePreview: "",
   })
@@ -26,6 +27,7 @@ const AddProduct = () => {
         category: editingProduct.category,
         quantity: editingProduct.quantity,
         price: editingProduct.price,
+        minQuantity: editingProduct.minQuantity || "", // ✅ Pre-fill if available
         imageFile: null,
         imagePreview: editingProduct.image || "",
       })
@@ -56,7 +58,7 @@ const AddProduct = () => {
       image: formData.imagePreview,
     }
 
-    // ✅ Show toast for add/update
+    // ✅ Normal success toast
     toast({
       title: editingProduct ? "Product Updated ✅" : "Product Added 🎉",
       description: editingProduct
@@ -64,6 +66,15 @@ const AddProduct = () => {
         : `${newProduct.name} has been added successfully.`,
       className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
     })
+
+    // ✅ Low stock warning
+    if (parseInt(newProduct.quantity) <= parseInt(newProduct.minQuantity)) {
+      toast({
+        title: "Low Stock ⚠️",
+        description: `${newProduct.name} is at or below minimum stock level.`,
+        className: "bg-yellow-500 text-white border-0 rounded-lg shadow-lg",
+      })
+    }
 
     navigate("/products", { state: { newProduct } })
   }
@@ -110,6 +121,19 @@ const AddProduct = () => {
           />
         </div>
 
+        {/* ✅ Minimum Quantity */}
+        <div>
+          <label className="block mb-1 font-medium">Minimum Quantity</label>
+          <input
+            type="number"
+            name="minQuantity"
+            value={formData.minQuantity}
+            onChange={handleChange}
+            required
+            className="w-full border rounded-lg p-2"
+          />
+        </div>
+
         <div>
           <label className="block mb-1 font-medium">Price</label>
           <input
@@ -122,7 +146,7 @@ const AddProduct = () => {
           />
         </div>
 
-        {/* Image Upload – Fixed */}
+        {/* Image Upload */}
         <div className="relative flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:border-pink-500 mb-4">
           {formData.imagePreview ? (
             <img

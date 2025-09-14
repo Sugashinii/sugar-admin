@@ -1,168 +1,276 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+"use client"
+
+import React, { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover"
-import {
-  Command,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from "@/components/ui/command"
-import { useToast } from "@/hooks/use-toast"   // 👈 import toast
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
+import { useNavigate } from "react-router-dom"
+
+const products = [
+  { id: 1, name: "Product A", price: 100 },
+  { id: 2, name: "Product B", price: 200 },
+  { id: 3, name: "Product C", price: 150 },
+]
 
 const AddOrder = () => {
-  const navigate = useNavigate()
   const [customerName, setCustomerName] = useState("")
-  const [orderItems, setOrderItems] = useState([{ name: "", quantity: 1, price: 0 }])
-  const { toast } = useToast()   // 👈 get toast
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
+  const [address, setAddress] = useState("")
+  const [orderItems, setOrderItems] = useState([{ productId: "", quantity: 1 }])
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState("Cash")
+  const [suggestions, setSuggestions] = useState([])
 
-  const products = [
-    { name: "Lipstick", price: 250 },
-    { name: "Eyeliner", price: 150 },
-    { name: "Face Wash", price: 300 },
-    { name: "Moisturizer", price: 500 },
-  ]
+  const { toast } = useToast()
+  const navigate = useNavigate()
 
-  const handleProductChange = (index, field, value) => {
-    const updatedItems = [...orderItems]
-    updatedItems[index][field] = value
-    if (field === "name") {
-      const product = products.find((p) => p.name === value)
-      updatedItems[index].price = product ? product.price : 0
-    }
-    setOrderItems(updatedItems)
+  const savedCustomers = JSON.parse(localStorage.getItem("customers")) || []
+
+  // calculate total
+  const totalAmount = orderItems.reduce((sum, item) => {
+    const product = products.find((p) => p.id === Number(item.productId))
+    return sum + (product ? product.price * item.quantity : 0)
+  }, 0)
+
+  const handleChange = (index, field, value) => {
+    const newItems = [...orderItems]
+    newItems[index][field] = value
+    setOrderItems(newItems)
   }
 
-  const handleAddProduct = () => {
-    setOrderItems([...orderItems, { name: "", quantity: 1, price: 0 }])
+  const handleAddItem = () => {
+    setOrderItems([...orderItems, { productId: "", quantity: 1 }])
+  }
+
+  const handleRemoveItem = (index) => {
+    const newItems = [...orderItems]
+    newItems.splice(index, 1)
+    setOrderItems(newItems)
+  }
+
+  // 🔹 Customer name input with suggestions
+  const handleCustomerInput = (e) => {
+    const value = e.target.value
+    setCustomerName(value)
+
+    if (value.length > 1) {
+      const matches = savedCustomers.filter((c) =>
+        c.name.toLowerCase().includes(value.toLowerCase())
+      )
+      setSuggestions(matches)
+    } else {
+      setSuggestions([])
+    }
+  }
+
+  // 🔹 Autofill when selecting a suggestion
+  const handleSelectCustomer = (cust) => {
+    setCustomerName(cust.name)
+    setEmail(cust.email || "")
+    setPhone(cust.phone || "")
+    setAddress(cust.address || "")
+    setSuggestions([])
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const existingOrders = JSON.parse(localStorage.getItem("orders")) || []
 
-    const nextId =
-      existingOrders.length > 0
-        ? "ORD-" + (parseInt(existingOrders[existingOrders.length - 1].id.split("-")[1]) + 1)
-        : "ORD-101"
-
-    const newOrder = {
-      id: nextId,
-      customerName,
-      orderItems,
-      status: "Pending",
-      date: new Date().toLocaleDateString(),
+    if (!customerName.trim()) {
+      toast({
+        title: "Missing Customer",
+        description: "Please enter customer name.",
+        className: "bg-red-500 text-white",
+      })
+      return
     }
 
-    const updatedOrders = [...existingOrders, newOrder]
-    localStorage.setItem("orders", JSON.stringify(updatedOrders))
+    if (!orderItems.every((item) => item.productId)) {
+      toast({
+        title: "Missing Product",
+        description: "Please select a product for all rows.",
+        className: "bg-red-500 text-white",
+      })
+      return
+    }
 
-    // ✅ Toast for new order
+    if (totalAmount <= 0) {
+      toast({
+        title: "Invalid Order",
+        description: "Order total must be greater than 0.",
+        className: "bg-red-500 text-white",
+      })
+      return
+    }
+
+    setIsPaymentOpen(true)
+  }
+
+  const handleConfirmPayment = () => {
+    const newOrder = {
+      id: `ORD-${Math.floor(Math.random() * 1000)}`,
+      customerName,
+      email,
+      phone,
+      address,
+      orderItems: orderItems.map((item) => {
+        const product = products.find((p) => p.id === Number(item.productId))
+        return {
+          ...item,
+          productName: product?.name || "",
+          price: product?.price || 0,
+        }
+      }),
+      amount: totalAmount,
+      paymentMethod,
+      date: new Date().toISOString().split("T")[0],
+      status: "Pending",
+    }
+
+    const storedOrders = JSON.parse(localStorage.getItem("orders")) || []
+    storedOrders.push(newOrder)
+    localStorage.setItem("orders", JSON.stringify(storedOrders))
+
     toast({
       title: "Order Created 🎉",
-      description: `Order for ${customerName} has been successfully created!`,
-      className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+      description: `Order for ${customerName} has been placed successfully.`,
+      className: "bg-green-500 text-white",
     })
 
+    setIsPaymentOpen(false)
     navigate("/orders")
   }
 
   return (
-    <div className="min-h-[80vh] max-w-2xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Create New Order</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block font-medium mb-2 text-gray-700">Customer Name</label>
-          <input
-            type="text"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            placeholder="Enter customer name"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium mb-2 text-gray-700">Products</label>
-          {orderItems.map((item, index) => (
-            <div key={index} className="flex gap-3 mb-3 items-center">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-[200px] justify-start bg-white border-gray-300"
-                  >
-                    {item.name || "Select product"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="p-0 w-[200px] border rounded-md shadow-md bg-white">
-                  <Command>
-                    <CommandInput placeholder="Search products..." />
-                    <CommandList>
-                      <CommandEmpty>No products found.</CommandEmpty>
-                      <CommandGroup>
-                        {products.map((product) => (
-                          <CommandItem
-                            key={product.name}
-                            onSelect={() => handleProductChange(index, "name", product.name)}
-                          >
-                            {product.name} — ₹{product.price}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-
-              <input
-                type="number"
-                min="1"
-                value={item.quantity}
-                onChange={(e) => handleProductChange(index, "quantity", parseInt(e.target.value))}
-                className="w-16 border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-pink-500"
-              />
-
-              <input
+    <div className="flex-1 p-6">
+      <Card className="max-w-3xl mx-auto ">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Create Order</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Customer Name */}
+            <div className="space-y-2 relative">
+              <Label htmlFor="customer">Customer Name</Label>
+              <Input
+                id="customer"
                 type="text"
-                value={item.price}
-                readOnly
-                className="w-24 border border-gray-300 rounded-md px-2 py-1 bg-gray-100"
+                value={customerName}
+                onChange={handleCustomerInput}
+                required
               />
+              {suggestions.length > 0 && (
+                <div className="absolute bg-white border rounded-lg shadow p-2 mt-1 z-10 w-full">
+                  {suggestions.map((cust) => (
+                    <div
+                      key={cust.id}
+                      onClick={() => handleSelectCustomer(cust)}
+                      className="p-2 hover:bg-pink-50 cursor-pointer rounded"
+                    >
+                      Do you mean <b>{cust.name}</b> ({cust.address})
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={handleAddProduct}
-            className="text-pink-600 text-sm hover:underline"
-          >
-            + Add Another Product
-          </button>
-        </div>
 
-        <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            className="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
-            onClick={() => setOrderItems([{ name: "", quantity: 1, price: 0 }])}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 rounded-md bg-pink-600 text-white hover:bg-pink-700"
-          >
-            Create Order
-          </button>
-        </div>
-      </form>
+            {/* Auto-filled fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Email</Label>
+                <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <div>
+                <Label>Phone</Label>
+                <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </div>
+            </div>
+            <div>
+              <Label>Address</Label>
+              <Input value={address} onChange={(e) => setAddress(e.target.value)} />
+            </div>
+
+            {/* Product List */}
+            <div className="space-y-4">
+              <Label>Products</Label>
+              {orderItems.map((item, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <select
+                    className="border p-2 rounded-md w-1/2"
+                    value={item.productId}
+                    onChange={(e) => handleChange(index, "productId", e.target.value)}
+                  >
+                    <option value="">Select Product</option>
+                    {products.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} (${p.price})
+                      </option>
+                    ))}
+                  </select>
+                  <Input
+                    type="number"
+                    min="1"
+                    className="w-24"
+                    value={item.quantity}
+                    onChange={(e) => handleChange(index, "quantity", Number(e.target.value))}
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => handleRemoveItem(index)}
+                    disabled={orderItems.length === 1}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+
+              <Button type="button" variant="outline" onClick={handleAddItem}>
+                + Add Product
+              </Button>
+            </div>
+
+            {/* Submit */}
+            <div className="flex justify-end">
+              <Button type="submit">Submit</Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Payment Dialog */}
+      <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Payment</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-lg font-semibold">Total Amount: ${totalAmount}</p>
+            <div>
+              <Label>Payment Method</Label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                  <SelectItem value="Digital">Digital</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPaymentOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmPayment}>Confirm Payment</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
