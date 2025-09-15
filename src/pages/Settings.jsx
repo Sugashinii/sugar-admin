@@ -17,14 +17,13 @@ import {
 import MyButton from "@/components/ui/MyButton";
 import { useToast } from "@/hooks/use-toast";
 
-
+// -------------------- DARK MODE HOOK --------------------
 const useDarkMode = () => {
   const [isDark, setIsDark] = useState(() => {
-
     if (typeof window !== "undefined") {
       return localStorage.getItem("theme") === "dark";
     }
-    return false; 
+    return false;
   });
 
   useEffect(() => {
@@ -40,7 +39,7 @@ const useDarkMode = () => {
   return [isDark, setIsDark];
 };
 
-
+// -------------------- MAIN COMPONENT --------------------
 export default function AdminSettingsPage() {
   const [isDarkMode, setDarkMode] = useDarkMode();
   const { toast } = useToast();
@@ -57,14 +56,12 @@ export default function AdminSettingsPage() {
 
   const [settings, setSettings] = useState(defaultSettings);
 
-
   useEffect(() => {
     const saved = localStorage.getItem("admin-settings");
     if (saved) {
       setSettings(JSON.parse(saved));
     }
   }, []);
-
 
   const handleSave = () => {
     localStorage.setItem("admin-settings", JSON.stringify(settings));
@@ -73,7 +70,6 @@ export default function AdminSettingsPage() {
       description: "Your changes have been successfully updated.",
     });
   };
-
 
   const handleReset = () => {
     setSettings(defaultSettings);
@@ -85,27 +81,27 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100 transition-colors">
+    <div className="min-h-screen p-8  transition-colors">
       <div className="max-w-5xl mx-auto">
-    
+        {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold dark:text-gray-100">
             SUGAR Admin Settings
           </h1>
           <button
             onClick={() => setDarkMode(!isDarkMode)}
-            className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700  dark:hover:bg-gray-600 transition-colors"
             aria-label="Toggle dark mode"
           >
             {isDarkMode ? (
               <Sun className="h-6 w-6 text-yellow-400" />
             ) : (
-              <Moon className="h-6 w-6 text-gray-500" />
+              <Moon className="h-6 w-6 text-gray-300" />
             )}
           </button>
         </div>
 
-       
+        {/* TABS */}
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="grid grid-cols-4 w-full mb-6">
             <TabsTrigger value="general">General</TabsTrigger>
@@ -114,7 +110,7 @@ export default function AdminSettingsPage() {
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
 
-        
+          {/* GENERAL TAB */}
           <TabsContent value="general">
             <Card className="shadow-md rounded-xl">
               <CardHeader>
@@ -129,10 +125,13 @@ export default function AdminSettingsPage() {
                       setSettings((p) => ({ ...p, defaultLanguage: value }))
                     }
                   >
-                    <SelectTrigger id="language-select" className="mt-2 w-[250px]">
+                    <SelectTrigger
+                      id="language-select"
+                      className="mt-2 w-[250px]"
+                    >
                       <SelectValue placeholder="Choose language" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white ">
                       <SelectItem value="en-US">English</SelectItem>
                       <SelectItem value="es-ES">Spanish</SelectItem>
                       <SelectItem value="fr-FR">French</SelectItem>
@@ -143,7 +142,7 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-      
+          {/* PRODUCT TAB */}
           <TabsContent value="product">
             <Card className="shadow-md rounded-xl">
               <CardHeader>
@@ -158,10 +157,13 @@ export default function AdminSettingsPage() {
                       setSettings((p) => ({ ...p, productSorting: value }))
                     }
                   >
-                    <SelectTrigger id="sorting-select" className="mt-2 w-[250px]">
+                    <SelectTrigger
+                      id="sorting-select"
+                      className="mt-2 w-[250px]"
+                    >
                       <SelectValue placeholder="Choose sorting" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white dark:text-gray-100">
                       <SelectItem value="newest_first">Newest First</SelectItem>
                       <SelectItem value="price_low_to_high">
                         Price: Low to High
@@ -205,7 +207,7 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-         
+          {/* MARKETING TAB */}
           <TabsContent value="marketing">
             <Card className="shadow-md rounded-xl">
               <CardHeader>
@@ -224,7 +226,9 @@ export default function AdminSettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="email-switch">New Order Email Notifications</Label>
+                  <Label htmlFor="email-switch">
+                    New Order Email Notifications
+                  </Label>
                   <Switch
                     id="email-switch"
                     checked={settings.emailNotifications}
@@ -237,6 +241,7 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
+          {/* SECURITY TAB */}
           <TabsContent value="security">
             <Card className="shadow-md rounded-xl">
               <CardHeader>
@@ -258,7 +263,7 @@ export default function AdminSettingsPage() {
           </TabsContent>
         </Tabs>
 
-     
+        {/* BUTTONS */}
         <div className="mt-8 flex gap-4">
           <MyButton onClick={handleSave} className="flex-1">
             Save Changes
