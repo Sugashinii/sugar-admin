@@ -19,12 +19,18 @@ import { useToast } from "@/hooks/use-toast";
 
 // -------------------- DARK MODE HOOK --------------------
 const useDarkMode = () => {
-  const [isDark, setIsDark] = useState(() => {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") === "dark";
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        setIsDark(savedTheme === "dark");
+      } else {
+        setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+      }
     }
-    return false;
-  });
+  }, []);
 
   useEffect(() => {
     if (isDark) {
@@ -58,9 +64,7 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem("admin-settings");
-    if (saved) {
-      setSettings(JSON.parse(saved));
-    }
+    if (saved) setSettings(JSON.parse(saved));
   }, []);
 
   const handleSave = () => {
@@ -81,22 +85,20 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen p-8  transition-colors">
+    <div className="min-h-screen p-8 transition-colors bg-white  dark:text-gray-100">
       <div className="max-w-5xl mx-auto">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold dark:text-gray-100">
-            SUGAR Admin Settings
-          </h1>
+          <h1 className="text-3xl font-bold">SUGAR Admin Settings</h1>
           <button
             onClick={() => setDarkMode(!isDarkMode)}
-            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700  dark:hover:bg-gray-600 transition-colors"
+            className="p-2 rounded-full bg-gray-200  dark:hover:bg-gray-600 transition-colors"
             aria-label="Toggle dark mode"
           >
             {isDarkMode ? (
               <Sun className="h-6 w-6 text-yellow-400" />
             ) : (
-              <Moon className="h-6 w-6 text-gray-300" />
+              <Moon className="h-6 w-6  dark:text-gray-300" />
             )}
           </button>
         </div>
@@ -112,7 +114,7 @@ export default function AdminSettingsPage() {
 
           {/* GENERAL TAB */}
           <TabsContent value="general">
-            <Card className="shadow-md rounded-xl">
+            <Card className="shadow-md rounded-xl bg-white ">
               <CardHeader>
                 <CardTitle>General Settings</CardTitle>
               </CardHeader>
@@ -125,13 +127,10 @@ export default function AdminSettingsPage() {
                       setSettings((p) => ({ ...p, defaultLanguage: value }))
                     }
                   >
-                    <SelectTrigger
-                      id="language-select"
-                      className="mt-2 w-[250px]"
-                    >
+                    <SelectTrigger id="language-select" className="mt-2 w-[250px]">
                       <SelectValue placeholder="Choose language" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white ">
+                    <SelectContent className="bg-white  dark:text-gray-100">
                       <SelectItem value="en-US">English</SelectItem>
                       <SelectItem value="es-ES">Spanish</SelectItem>
                       <SelectItem value="fr-FR">French</SelectItem>
@@ -144,7 +143,7 @@ export default function AdminSettingsPage() {
 
           {/* PRODUCT TAB */}
           <TabsContent value="product">
-            <Card className="shadow-md rounded-xl">
+            <Card className="shadow-md rounded-xl bg-white dark:bg-gray-800">
               <CardHeader>
                 <CardTitle>Product & Catalog</CardTitle>
               </CardHeader>
@@ -157,20 +156,13 @@ export default function AdminSettingsPage() {
                       setSettings((p) => ({ ...p, productSorting: value }))
                     }
                   >
-                    <SelectTrigger
-                      id="sorting-select"
-                      className="mt-2 w-[250px]"
-                    >
+                    <SelectTrigger id="sorting-select" className="mt-2 w-[250px]">
                       <SelectValue placeholder="Choose sorting" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:text-gray-100">
+                    <SelectContent className="bg-white  dark:text-gray-100">
                       <SelectItem value="newest_first">Newest First</SelectItem>
-                      <SelectItem value="price_low_to_high">
-                        Price: Low to High
-                      </SelectItem>
-                      <SelectItem value="price_high_to_low">
-                        Price: High to Low
-                      </SelectItem>
+                      <SelectItem value="price_low_to_high">Price: Low to High</SelectItem>
+                      <SelectItem value="price_high_to_low">Price: High to Low</SelectItem>
                       <SelectItem value="best_sellers">Best Sellers</SelectItem>
                     </SelectContent>
                   </Select>
@@ -209,7 +201,7 @@ export default function AdminSettingsPage() {
 
           {/* MARKETING TAB */}
           <TabsContent value="marketing">
-            <Card className="shadow-md rounded-xl">
+            <Card className="shadow-md rounded-xl bg-white ">
               <CardHeader>
                 <CardTitle>Marketing</CardTitle>
               </CardHeader>
@@ -226,9 +218,7 @@ export default function AdminSettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="email-switch">
-                    New Order Email Notifications
-                  </Label>
+                  <Label htmlFor="email-switch">New Order Email Notifications</Label>
                   <Switch
                     id="email-switch"
                     checked={settings.emailNotifications}
@@ -243,7 +233,7 @@ export default function AdminSettingsPage() {
 
           {/* SECURITY TAB */}
           <TabsContent value="security">
-            <Card className="shadow-md rounded-xl">
+            <Card className="shadow-md rounded-xl bg-white ">
               <CardHeader>
                 <CardTitle>Security</CardTitle>
               </CardHeader>
@@ -270,7 +260,7 @@ export default function AdminSettingsPage() {
           </MyButton>
           <MyButton
             onClick={handleReset}
-            className="flex-1 bg-gray-400 hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-500"
+            className="flex-1 bg-gray-400 hover:bg-gray-500  dark:hover:bg-gray-500"
           >
             Reset Defaults
           </MyButton>
