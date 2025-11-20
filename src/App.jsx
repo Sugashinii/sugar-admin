@@ -1,5 +1,7 @@
+// src/App.jsx
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
+
 import Login from "./pages/Login.jsx"
 import ResetPassword from "./pages/ResetPassword.jsx"
 import Dashboard from "./pages/Dashboard.jsx"
@@ -9,11 +11,10 @@ import AddProduct from "./pages/AddProduct.jsx"
 import Customers from "./pages/Customers.jsx"
 import Settings from "./pages/Settings.jsx"
 import AddOrder from "./pages/AddOrder.jsx"
+import Categories from "./pages/Categories.jsx"
+
 import Sidebar from "./components/Sidebar.jsx"
 import Navbar from "./components/Navbar.jsx"
-import Categories from "./pages/Categories.jsx"
-import AddCategory from "./pages/AddCategory.jsx"
-import EditCategory from "./pages/EditCategory.jsx"
 
 import { isLoggedIn } from "./utils/auth.js"
 
@@ -63,28 +64,20 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/products/add"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <AddProduct />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/categories"
               element={
                 <ProtectedRoute loggedIn={loggedIn}>
                   <Categories />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/categories/add"
-              element={
-                <ProtectedRoute loggedIn={loggedIn}>
-                  <AddCategory />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/categories/edit/:id"
-              element={
-                <ProtectedRoute loggedIn={loggedIn}>
-                  <EditCategory />
                 </ProtectedRoute>
               }
             />
@@ -107,14 +100,6 @@ export default function App() {
             />
 
             <Route
-              path="/add-product"
-              element={
-                <ProtectedRoute loggedIn={loggedIn}>
-                  <AddProduct />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="/customers"
               element={
                 <ProtectedRoute loggedIn={loggedIn}>
@@ -122,6 +107,15 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/customers/add"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <Customers />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/settings"
               element={

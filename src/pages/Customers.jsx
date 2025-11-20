@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 import MyButton from "../components/ui/MyButton"
 import ReusableDropdown from "../components/ui/ReusableDropdown"
 import { MoreVertical, Plus } from "lucide-react"
@@ -14,11 +15,19 @@ const Customers = () => {
     { id: "CUST-104", name: "Alert Aarumugam", email: "alert@example.com", phone: "9090909090", address: "Salem", invoices: 2 },
   ])
 
-  const [showAddForm, setShowAddForm] = useState(false)
+  const location = useLocation()
+  const navigate = useNavigate()
   const { toast } = useToast()
 
+  // showAddForm is controlled by route (if path ends with /add) OR local toggles
+  const [showAddForm, setShowAddForm] = useState(false)
+
+  useEffect(() => {
+    // if the route is /customers/add, show add form
+    setShowAddForm(location.pathname.endsWith("/add"))
+  }, [location.pathname])
+
   const handleAddCustomer = (customer) => {
- 
     if (customers.some((c) => c.id === customer.id)) {
       toast({
         title: "Customer Already Exists ⚠️",
@@ -29,12 +38,13 @@ const Customers = () => {
     }
 
     setCustomers((prev) => [...prev, customer])
-
     toast({
       title: "Customer Added 🎉",
       description: `${customer.name} has been added successfully!`,
       className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
     })
+    // after add, navigate back to customers list to update URL
+    navigate("/customers", { replace: true })
   }
 
   const handleDelete = (id) => {
@@ -54,8 +64,8 @@ const Customers = () => {
     return (
       <AddCustomer
         onAdd={handleAddCustomer}
-        onCancel={() => setShowAddForm(false)}
-        existingCustomers={customers} 
+        onCancel={() => navigate("/customers")}
+        existingCustomers={customers}
       />
     )
   }
@@ -66,7 +76,7 @@ const Customers = () => {
     <div className="flex-1 p-6 bg-gray-50">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Customers</h1>
-        <MyButton onClick={() => setShowAddForm(true)}>
+        <MyButton onClick={() => navigate("/customers/add")}>
           <Plus className="w-4 h-4 inline-block mr-2" />
           Add Customer
         </MyButton>

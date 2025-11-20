@@ -1,8 +1,8 @@
-// src/pages/Categories.jsx
-import { useState, useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 import { MoreVertical } from "lucide-react"
 import ReusableDropdown from "../components/ui/ReusableDropdown"
+import { useToast } from "@/hooks/use-toast"
 
 const STORAGE_KEY = "sugar_categories"
 const PLACEHOLDER = "/mnt/data/Screenshot 2025-11-20 140315.png"
@@ -10,10 +10,10 @@ const PLACEHOLDER = "/mnt/data/Screenshot 2025-11-20 140315.png"
 function getStoredCategories() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
+    if (!raw) return []
     return JSON.parse(raw)
   } catch {
-    return null
+    return []
   }
 }
 
@@ -21,30 +21,133 @@ function saveStoredCategories(categories) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(categories))
 }
 
-const defaultCategories = [
-  { id: 1, name: "Eye", img: PLACEHOLDER },
-  { id: 2, name: "Lips", img: PLACEHOLDER },
-  { id: 3, name: "Hair", img: PLACEHOLDER },
-]
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
 
 export default function Categories() {
   const [categories, setCategories] = useState([])
-  const navigate = useNavigate()
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingId, setEditingId] = useState(null) 
+  const [name, setName] = useState("")
+  const [preview, setPreview] = useState(null)
+  const [file, setFile] = useState(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     const stored = getStoredCategories()
-    if (stored && Array.isArray(stored) && stored.length) {
+    if (stored && stored.length) {
       setCategories(stored)
     } else {
-      setCategories(defaultCategories)
-      saveStoredCategories(defaultCategories)
+      const defaults = [
+        { id: 1, name: "Eye", img: PLACEHOLDER },
+        { id: 2, name: "Lips", img: PLACEHOLDER },
+        { id: 3, name: "Hair", img: PLACEHOLDER },
+      ]
+      setCategories(defaults)
+      saveStoredCategories(defaults)
     }
   }, [])
+
+  const openAddDialog = () => {
+    setEditingId(null)
+    setName("")
+    setPreview(null)
+    setFile(null)
+    setDialogOpen(true)
+  }
+
+  const openEditDialog = (id) => {
+    const cat = categories.find((c) => String(c.id) === String(id))
+    if (!cat) return
+    setEditingId(cat.id)
+    setName(cat.name || "")
+    setPreview(cat.img || PLACEHOLDER)
+    setFile(null)
+    setDialogOpen(true)
+  }
+
+  const closeDialog = () => {
+    setDialogOpen(false)
+    setEditingId(null)
+    setName("")
+    setPreview(null)
+    setFile(null)
+  }
+
+  const handleFile = (e) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    const url = URL.createObjectURL(f)
+    setPreview(url)
+    setFile(f)
+  }
+
+  const handleSave = async (e) => {
+    e.preventDefault()
+    if (!name.trim()) {
+      toast({
+        title: "Name required",
+        description: "Please enter a category name.",
+        className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+      })
+      return
+    }
+
+    let imgData = preview || PLACEHOLDER
+    if (file) {
+      try {
+        imgData = await readFileAsDataURL(file)
+      } catch {
+        imgData = preview || PLACEHOLDER
+      }
+    }
+
+    if (editingId) {
+      const updated = categories.map((c) =>
+        String(c.id) === String(editingId) ? { ...c, name: name.trim(), img: imgData } : c
+      )
+      setCategories(updated)
+      saveStoredCategories(updated)
+      toast({
+        title: "Saved",
+        description: `Saved ${name}`,
+        className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+      })
+    } else {
+      const existing = getStoredCategories()
+      const newCategory = {
+        id: Date.now(),
+        name: name.trim(),
+        img: imgData,
+      }
+      const updated = [newCategory, ...existing]
+      setCategories(updated)
+      saveStoredCategories(updated)
+      toast({
+        title: "Category created",
+        description: `Created ${name}`,
+        className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
+      })
+    }
+
+    closeDialog()
+  }
 
   const handleDelete = (id) => {
     const updated = categories.filter((c) => c.id !== id)
     setCategories(updated)
     saveStoredCategories(updated)
+    toast({
+      title: "Category Deleted",
+      description: "Category removed.",
+      className: "bg-black text-pink-200 border-0 rounded-lg shadow-lg",
+    })
   }
 
   return (
@@ -53,7 +156,7 @@ export default function Categories() {
         <h1 className="text-2xl font-bold">Categories</h1>
         <div>
           <button
-            onClick={() => navigate("/categories/add")}
+            onClick={openAddDialog}
             className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 transition"
           >
             Create Category
@@ -73,19 +176,15 @@ export default function Categories() {
                 <h3 className="text-lg font-semibold">{cat.name}</h3>
 
                 <div className="flex items-center gap-2">
-                  <Link
-                    to={`/categories/edit/${cat.id}`}
+                  <button
+                    onClick={() => openEditDialog(cat.id)}
                     className="text-sm px-3 py-1 border rounded text-pink-600 hover:bg-pink-50"
                   >
                     Edit
-                  </Link>
+                  </button>
 
                   <ReusableDropdown
-                    trigger={
-                      <button className="p-2 hover:bg-gray-100 rounded-full">
-                        <MoreVertical />
-                      </button>
-                    }
+                    trigger={<button className="p-2 hover:bg-gray-100 rounded-full"><MoreVertical /></button>}
                     items={[
                       {
                         label: "Delete Category",
@@ -110,6 +209,46 @@ export default function Categories() {
 
       {categories.length === 0 && (
         <div className="mt-8 text-center text-gray-500">No categories yet. Create your first category.</div>
+      )}
+
+      {dialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={closeDialog}
+          />
+          <div className="relative z-10 w-[min(720px,95%)] bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4">{editingId ? "Edit Category" : "Create Category"}</h2>
+            <form onSubmit={handleSave}>
+              <label className="block mb-4">
+                <span className="text-sm font-medium">Image</span>
+                <div className="mt-2 flex items-center gap-4">
+                  <div className="w-28 h-28 rounded border overflow-hidden">
+                    <img src={preview || PLACEHOLDER} alt="preview" className="w-full h-full object-cover" />
+                  </div>
+                  <input type="file" accept="image/*" onChange={handleFile} />
+                </div>
+              </label>
+
+              <label className="block mb-6">
+                <span className="text-sm font-medium">Category Name</span>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full mt-2 p-2 border rounded"
+                  placeholder="e.g. Lipsticks"
+                />
+              </label>
+
+              <div className="flex justify-end gap-3">
+                <button type="button" onClick={closeDialog} className="px-4 py-2 border rounded">Cancel</button>
+                <button type="submit" className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 transition">
+                  {editingId ? "Save" : "Create"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   )

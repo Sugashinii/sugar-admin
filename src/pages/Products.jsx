@@ -4,16 +4,15 @@ import { useLocation, useNavigate } from "react-router-dom"
 import MyButton from "../components/ui/MyButton"
 import DataTable from "../components/ui/DataTable"
 import ReusableDropdown from "../components/ui/ReusableDropdown"
-import { useToast } from "@/hooks/use-toast"  
+import { useToast } from "@/hooks/use-toast"
 
 const Products = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { toast } = useToast()  
+  const { toast } = useToast()
 
   const [products, setProducts] = useState([])
 
-  
   useEffect(() => {
     const stored = localStorage.getItem("products")
     if (stored) {
@@ -21,17 +20,13 @@ const Products = () => {
     }
   }, [])
 
-
   useEffect(() => {
     if (location.state?.newProduct) {
       setProducts((prev) => {
         let updated
-        const existingIndex = prev.findIndex(
-          (p) => p.id === location.state.newProduct.id
-        )
+        const existingIndex = prev.findIndex((p) => p.id === location.state.newProduct.id)
 
         if (existingIndex >= 0) {
-   
           updated = [...prev]
           updated[existingIndex] = location.state.newProduct
 
@@ -41,8 +36,9 @@ const Products = () => {
             className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
           })
         } else {
-      
-          updated = [...prev, { id: prev.length + 1, ...location.state.newProduct }]
+          // ensure id is unique (if new product came without id)
+          const newId = location.state.newProduct.id ?? (prev.length ? Math.max(...prev.map(p => p.id)) + 1 : 1)
+          updated = [...prev, { id: newId, ...location.state.newProduct }]
 
           toast({
             title: "Product Added 🎉",
@@ -54,11 +50,11 @@ const Products = () => {
         localStorage.setItem("products", JSON.stringify(updated))
         return updated
       })
+      // replace to clear state in URL
       navigate("/products", { replace: true })
     }
   }, [location.state, navigate, toast])
 
- 
   const handleDelete = (id) => {
     const updatedProducts = products.filter((p) => p.id !== id)
     setProducts(updatedProducts)
@@ -75,16 +71,14 @@ const Products = () => {
 
   return (
     <div className="flex-1 p-6 bg-gray-50">
-      {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Manage Products</h1>
-        <MyButton onClick={() => navigate("/add-product")}>
+        <MyButton onClick={() => navigate("/products/add")}>
           <Plus className="w-4 h-4 inline-block mr-2" />
           Add New Product
         </MyButton>
       </div>
 
-      {/* Products Table */}
       <div className="bg-white rounded-xl shadow overflow-hidden">
         <DataTable columns={columns}>
           {products.length === 0 ? (
@@ -95,17 +89,10 @@ const Products = () => {
             </tr>
           ) : (
             products.map((p) => (
-              <tr
-                key={p.id}
-                className="border-b hover:bg-gray-50 transition-colors"
-              >
+              <tr key={p.id} className="border-b hover:bg-gray-50 transition-colors">
                 <td className="p-4 flex items-center gap-2">
                   {p.image && (
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
+                    <img src={p.image} alt={p.name} className="w-10 h-10 rounded-full object-cover" />
                   )}
                   {p.name}
                 </td>
@@ -122,8 +109,7 @@ const Products = () => {
                     items={[
                       {
                         label: "Edit Product",
-                        onClick: () =>
-                          navigate("/add-product", { state: { product: p } }),
+                        onClick: () => navigate("/products/add", { state: { product: p } }),
                       },
                       {
                         label: "Delete Product",
