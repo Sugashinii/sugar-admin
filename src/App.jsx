@@ -1,6 +1,8 @@
+// src/App.jsx
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
 import Login from "./pages/Login.jsx"
+import ResetPassword from "./pages/ResetPassword.jsx"
 import Dashboard from "./pages/Dashboard.jsx"
 import Products from "./pages/Products.jsx"
 import Orders from "./pages/Orders.jsx"
@@ -23,19 +25,32 @@ export default function App() {
     return () => window.removeEventListener("storage", checkAuth)
   }, [])
 
-  const showSidebar = loggedIn && location.pathname !== "/"
+  // hide sidebar/navbar on public auth pages (login & reset)
+  const authPaths = ["/", "/reset-password"]
+  const showSidebar = loggedIn && !authPaths.includes(location.pathname)
+
+  // create a nice title out of pathname, fallback to Dashboard
+  const makeTitle = (path) => {
+    if (!path || path === "/") return "Dashboard"
+    const name = path.replace("/", "")
+    // replace dashes with spaces and capitalize first letter
+    return name.replace(/-/g, " ").replace(/\b\w/, (c) => c.toUpperCase())
+  }
 
   return (
     <div className="flex">
       {showSidebar && <Sidebar />}
       <div className={showSidebar ? "pl-64 flex-1 min-h-screen bg-gray-50" : "w-full"}>
         {showSidebar && (
-          <Navbar title={location.pathname.replace("/", "") || "Dashboard"} />
+          <Navbar title={makeTitle(location.pathname)} />
         )}
         <div className="p-6">
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<Login onLogin={() => setLoggedIn(true)} />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
+            {/* Protected routes */}
             <Route
               path="/dashboard"
               element={
@@ -60,7 +75,6 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-          
             <Route
               path="/orders/add"
               element={
@@ -93,6 +107,9 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
+       
+            <Route path="*" element={<Navigate to={loggedIn ? "/dashboard" : "/"} />} />
           </Routes>
         </div>
       </div>
@@ -101,5 +118,5 @@ export default function App() {
 }
 
 function ProtectedRoute({ children, loggedIn }) {
-  return loggedIn ? children : <Navigate to="/" />
+  return loggedIn ? children : <Navigate to="/" replace />
 }

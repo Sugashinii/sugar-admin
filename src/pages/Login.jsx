@@ -18,7 +18,7 @@ export default function Login({ onLogin }) {
 
     if (username === name && password === pass) {
       login("fake-token")
-      onLogin?.()  
+      onLogin?.()
 
       toast({
         title: "Login Successful 🎉",
@@ -30,7 +30,6 @@ export default function Login({ onLogin }) {
     } else {
       setError("Invalid username or password ❌")
 
-    
       toast({
         title: "Login Failed",
         description: "Invalid username or password.",
@@ -41,15 +40,15 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="h-screen w-screen flex items-center justify-center">
-      <form 
-        onSubmit={handleSubmit} 
+      <form
+        onSubmit={handleSubmit}
         className="relative z-10 bg-white p-8 rounded-2xl shadow-lg w-80"
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Sugar Admin</h2>
-        
+
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
-        <input 
+        <input
           type="text"
           placeholder="Username"
           value={username}
@@ -57,15 +56,23 @@ export default function Login({ onLogin }) {
           className="w-full mb-4 p-2 border rounded"
         />
 
-        <input 
+        <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-6 p-2 border rounded"
+          className="w-full mb-2 p-2 border rounded"
         />
 
-        <button 
+        {/* 🌸 Forgot Password Link */}
+        <p
+          onClick={() => navigate("/reset-password")}
+          className="text-sm text-pink-600 cursor-pointer hover:underline mb-6 text-right"
+        >
+          Forgot Password?
+        </p>
+
+        <button
           type="submit"
           className="w-full bg-pink-500 text-white py-2 rounded hover:bg-pink-600 transition"
         >
