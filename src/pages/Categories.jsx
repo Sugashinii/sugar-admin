@@ -44,11 +44,12 @@ export default function Categories() {
     if (stored && stored.length) {
       setCategories(stored)
     } else {
-      const defaults = [
-        { id: 1, name: "Eye", img: PLACEHOLDER },
-        { id: 2, name: "Lips", img: PLACEHOLDER },
-        { id: 3, name: "Hair", img: PLACEHOLDER },
-      ]
+    const defaults = [
+  { id: 1, name: "Eye", img: "/eye.jpeg" },
+  { id: 2, name: "Lips", img: "/lip-copy.jpeg" },
+  { id: 3, name: "Hair", img: "/hhair.jpeg" },
+];
+
       setCategories(defaults)
       saveStoredCategories(defaults)
     }
