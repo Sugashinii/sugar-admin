@@ -11,6 +11,9 @@ import Settings from "./pages/Settings.jsx"
 import AddOrder from "./pages/AddOrder.jsx"
 import Sidebar from "./components/Sidebar.jsx"
 import Navbar from "./components/Navbar.jsx"
+import Categories from "./pages/Categories.jsx"
+import AddCategory from "./pages/AddCategory.jsx"
+import EditCategory from "./pages/EditCategory.jsx"
 
 import { isLoggedIn } from "./utils/auth.js"
 
@@ -21,18 +24,15 @@ export default function App() {
   useEffect(() => {
     const checkAuth = () => setLoggedIn(isLoggedIn())
     window.addEventListener("storage", checkAuth)
-    return () => window.removeEventListener("storage", checkAuth)   }, [])
-
-
+    return () => window.removeEventListener("storage", checkAuth)
+  }, [])
 
   const authPaths = ["/", "/reset-password"]
   const showSidebar = loggedIn && !authPaths.includes(location.pathname)
 
-  
   const makeTitle = (path) => {
     if (!path || path === "/") return "Dashboard"
     const name = path.replace("/", "")
-
     return name.replace(/-/g, " ").replace(/\b\w/, (c) => c.toUpperCase())
   }
 
@@ -40,16 +40,12 @@ export default function App() {
     <div className="flex">
       {showSidebar && <Sidebar />}
       <div className={showSidebar ? "pl-64 flex-1 min-h-screen bg-gray-50" : "w-full"}>
-        {showSidebar && (
-          <Navbar title={makeTitle(location.pathname)} />
-        )}
+        {showSidebar && <Navbar title={makeTitle(location.pathname)} />}
         <div className="p-6">
           <Routes>
-    
             <Route path="/" element={<Login onLogin={() => setLoggedIn(true)} />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
-       
             <Route
               path="/dashboard"
               element={
@@ -58,6 +54,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/products"
               element={
@@ -66,6 +63,32 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/categories"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <Categories />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/categories/add"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <AddCategory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/categories/edit/:id"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <EditCategory />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/orders"
               element={
@@ -82,6 +105,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/add-product"
               element={
@@ -107,7 +131,6 @@ export default function App() {
               }
             />
 
-       
             <Route path="*" element={<Navigate to={loggedIn ? "/dashboard" : "/"} />} />
           </Routes>
         </div>

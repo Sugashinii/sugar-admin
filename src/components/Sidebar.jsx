@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom"
-import { LogOut, LayoutDashboard, ShoppingCart, Package, Users, Settings } from "lucide-react"
+import { LogOut, LayoutDashboard, ShoppingCart, Package, Tag, Users, Settings } from "lucide-react"
 import { logout } from "../utils/auth"
-import { useToast } from "@/hooks/use-toast"  // 👈 import toast
+import { useToast } from "@/hooks/use-toast"
 
 import {
   AlertDialog,
@@ -18,7 +18,7 @@ import {
 export default function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { toast } = useToast()  // 👈 get toast
+  const { toast } = useToast()
 
   const handleLogout = () => {
     logout()
@@ -34,7 +34,6 @@ export default function Sidebar() {
     const activeClasses = "bg-rose-100 text-rose-700"
     const inactiveClasses = "text-slate-700 hover:bg-rose-50 hover:text-rose-600"
     const baseClasses = "flex items-center gap-3 p-3 rounded-lg transition-colors duration-200"
-
     return `${baseClasses} ${location.pathname === path ? activeClasses : inactiveClasses}`
   }
 
@@ -43,25 +42,35 @@ export default function Sidebar() {
       <div>
         <h1 className="text-2xl font-bold text-rose-600 mb-8 px-2">Sugar Admin</h1>
         <nav className="flex flex-col space-y-2">
+
           <Link to="/dashboard" className={getLinkClasses("/dashboard")}>
             <LayoutDashboard size={20} /> Dashboard
           </Link>
+
           <Link to="/orders" className={getLinkClasses("/orders")}>
             <ShoppingCart size={20} /> Orders
           </Link>
+
           <Link to="/products" className={getLinkClasses("/products")}>
             <Package size={20} /> Products
           </Link>
+
+          {/* ⭐ NEW CATEGORY ENTRY HERE */}
+          <Link to="/categories" className={getLinkClasses("/categories")}>
+            <Tag size={20} /> Categories
+          </Link>
+
           <Link to="/customers" className={getLinkClasses("/customers")}>
             <Users size={20} /> Customers
           </Link>
+
           <Link to="/settings" className={getLinkClasses("/settings")}>
             <Settings size={20} /> Settings
           </Link>
+
         </nav>
       </div>
 
-      {/* 🔥 Logout with confirmation dialog */}
       <div className="border-t pt-4">
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -74,15 +83,17 @@ export default function Sidebar() {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
               <AlertDialogDescription>
-                You will be logged out of your account and redirected to the login page.
+                You will be logged out and redirected to login.
               </AlertDialogDescription>
             </AlertDialogHeader>
+
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleLogout}>
                 Logout
               </AlertDialogAction>
             </AlertDialogFooter>
+
           </AlertDialogContent>
         </AlertDialog>
       </div>
