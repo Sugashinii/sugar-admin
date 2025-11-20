@@ -17,7 +17,7 @@ import {
 import MyButton from "@/components/ui/MyButton";
 import { useToast } from "@/hooks/use-toast";
 
-// -------------------- DARK MODE HOOK --------------------
+
 const useDarkMode = () => {
   const [isDark, setIsDark] = useState(false);
 
@@ -45,7 +45,6 @@ const useDarkMode = () => {
   return [isDark, setIsDark];
 };
 
-// -------------------- MAIN COMPONENT --------------------
 export default function AdminSettingsPage() {
   const [isDarkMode, setDarkMode] = useDarkMode();
   const { toast } = useToast();
@@ -87,7 +86,7 @@ export default function AdminSettingsPage() {
   return (
     <div className="min-h-screen p-8 transition-colors bg-white  dark:text-gray-100">
       <div className="max-w-5xl mx-auto">
-        {/* HEADER */}
+ 
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">SUGAR Admin Settings</h1>
           <button
@@ -141,7 +140,7 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-          {/* PRODUCT TAB */}
+ 
           <TabsContent value="product">
             <Card className="shadow-md rounded-xl bg-white dark:bg-gray-800">
               <CardHeader>

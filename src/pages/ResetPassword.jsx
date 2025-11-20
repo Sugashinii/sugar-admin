@@ -12,7 +12,7 @@ export default function ResetPassword() {
 
     toast({
       title: "Reset link sent",
-      description: "If this email is an admin account, a reset link was sent.",
+      description: "Reset link was sent to this Email ID.",
       className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
     });
     navigate("/"); 

@@ -64,7 +64,7 @@ export default function Login({ onLogin }) {
           className="w-full mb-2 p-2 border rounded"
         />
 
-        {/* 🌸 Forgot Password Link */}
+   
         <p
           onClick={() => navigate("/reset-password")}
           className="text-sm text-pink-600 cursor-pointer hover:underline mb-6 text-right"

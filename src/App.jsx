@@ -1,4 +1,3 @@
-// src/App.jsx
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
 import Login from "./pages/Login.jsx"
@@ -22,18 +21,18 @@ export default function App() {
   useEffect(() => {
     const checkAuth = () => setLoggedIn(isLoggedIn())
     window.addEventListener("storage", checkAuth)
-    return () => window.removeEventListener("storage", checkAuth)
-  }, [])
+    return () => window.removeEventListener("storage", checkAuth)   }, [])
 
-  // hide sidebar/navbar on public auth pages (login & reset)
+
+
   const authPaths = ["/", "/reset-password"]
   const showSidebar = loggedIn && !authPaths.includes(location.pathname)
 
-  // create a nice title out of pathname, fallback to Dashboard
+  
   const makeTitle = (path) => {
     if (!path || path === "/") return "Dashboard"
     const name = path.replace("/", "")
-    // replace dashes with spaces and capitalize first letter
+
     return name.replace(/-/g, " ").replace(/\b\w/, (c) => c.toUpperCase())
   }
 
@@ -46,11 +45,11 @@ export default function App() {
         )}
         <div className="p-6">
           <Routes>
-            {/* Public routes */}
+    
             <Route path="/" element={<Login onLogin={() => setLoggedIn(true)} />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
-            {/* Protected routes */}
+       
             <Route
               path="/dashboard"
               element={
