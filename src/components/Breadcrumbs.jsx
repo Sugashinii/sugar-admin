@@ -1,4 +1,4 @@
-// src/components/Breadcrumbs.jsx
+
 import { Link, useLocation } from "react-router-dom"
 
 const defaultLabelMap = {
@@ -8,9 +8,9 @@ const defaultLabelMap = {
   customers: "Customers",
   settings: "Settings",
   categories: "Categories",
-  add: "Create",
+  add: "Add",
   edit: "Edit",
-  // add more friendly labels here if you need
+
 }
 
 const isNumeric = (s) => /^\d+$/.test(s)
@@ -22,13 +22,13 @@ export default function Breadcrumbs({ labelMap = {}, separator = "›" }) {
 
   const originalSegments = pathname.split("/").filter(Boolean)
 
-  // Build crumbs but skip pure numeric segments (IDs)
+
   const crumbs = []
   let accPath = ""
   for (const seg of originalSegments) {
     accPath += `/${seg}`
     if (isNumeric(seg)) {
-      // skip numeric id segments from breadcrumb display but keep them in accPath
+    
       continue
     }
     crumbs.push({ seg, path: accPath })

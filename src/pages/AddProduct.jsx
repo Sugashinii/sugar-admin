@@ -9,7 +9,7 @@ const AddProduct = () => {
   const editingProduct = location.state?.product || null
   const { toast } = useToast()
 
-  // ✅ Static category list
+
   const categories = [
     "Electronics",
     "Clothing",
@@ -30,7 +30,7 @@ const AddProduct = () => {
     imagePreview: "",
   })
 
-  // Pre-fill form if editing
+
   useEffect(() => {
     if (editingProduct) {
       setFormData({
@@ -69,7 +69,7 @@ const AddProduct = () => {
       image: formData.imagePreview,
     }
 
-    // ✅ Normal success toast
+  
     toast({
       title: editingProduct ? "Product Updated ✅" : "Product Added 🎉",
       description: editingProduct
@@ -78,7 +78,7 @@ const AddProduct = () => {
       className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
     })
 
-    // ✅ Low stock warning
+
     if (parseInt(newProduct.quantity) <= parseInt(newProduct.minQuantity)) {
       toast({
         title: "Low Stock ⚠️",
@@ -188,7 +188,7 @@ const AddProduct = () => {
           />
         </div>
 
-        {/* Buttons */}
+     
         <div className="flex justify-end gap-2">
           <MyButton type="button" onClick={() => navigate("/products")}>
             Cancel

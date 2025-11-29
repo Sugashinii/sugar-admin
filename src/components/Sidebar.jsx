@@ -55,7 +55,6 @@ export default function Sidebar() {
             <Package size={20} /> Products
           </Link>
 
-          {/* ⭐ NEW CATEGORY ENTRY HERE */}
           <Link to="/categories" className={getLinkClasses("/categories")}>
             <Tag size={20} /> Categories
           </Link>

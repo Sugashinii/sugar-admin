@@ -19,11 +19,11 @@ const Customers = () => {
   const navigate = useNavigate()
   const { toast } = useToast()
 
-  // showAddForm is controlled by route (if path ends with /add) OR local toggles
+  
   const [showAddForm, setShowAddForm] = useState(false)
 
   useEffect(() => {
-    // if the route is /customers/add, show add form
+
     setShowAddForm(location.pathname.endsWith("/add"))
   }, [location.pathname])
 
@@ -43,7 +43,7 @@ const Customers = () => {
       description: `${customer.name} has been added successfully!`,
       className: "bg-pink-500 text-white border-0 rounded-lg shadow-lg",
     })
-    // after add, navigate back to customers list to update URL
+
     navigate("/customers", { replace: true })
   }
 

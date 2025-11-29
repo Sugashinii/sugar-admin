@@ -102,7 +102,7 @@ export default function AdminSettingsPage() {
           </button>
         </div>
 
-        {/* TABS */}
+     
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="grid grid-cols-4 w-full mb-6">
             <TabsTrigger value="general">General</TabsTrigger>
@@ -111,7 +111,7 @@ export default function AdminSettingsPage() {
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
 
-          {/* GENERAL TAB */}
+        
           <TabsContent value="general">
             <Card className="shadow-md rounded-xl bg-white ">
               <CardHeader>
@@ -198,7 +198,7 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-          {/* MARKETING TAB */}
+      
           <TabsContent value="marketing">
             <Card className="shadow-md rounded-xl bg-white ">
               <CardHeader>
@@ -230,7 +230,7 @@ export default function AdminSettingsPage() {
             </Card>
           </TabsContent>
 
-          {/* SECURITY TAB */}
+     
           <TabsContent value="security">
             <Card className="shadow-md rounded-xl bg-white ">
               <CardHeader>
@@ -252,7 +252,7 @@ export default function AdminSettingsPage() {
           </TabsContent>
         </Tabs>
 
-        {/* BUTTONS */}
+     
         <div className="mt-8 flex gap-4">
           <MyButton onClick={handleSave} className="flex-1">
             Save Changes

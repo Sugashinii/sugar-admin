@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import Breadcrumbs from "./Breadcrumbs"
 
 export default function Navbar() {

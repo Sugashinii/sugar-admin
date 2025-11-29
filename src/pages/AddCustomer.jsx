@@ -10,7 +10,7 @@ const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
     name: "",
     email: "",
     password: "",
-    role: "customer", // default
+    role: "customer", 
     avatar: "",
   })
   const [suggestedCustomer, setSuggestedCustomer] = useState(null)
@@ -38,9 +38,9 @@ const AddCustomer = ({ onAdd, onCancel, existingCustomers = [] }) => {
   }, [form.name, existingCustomers])
 
   const validateUrl = (url) => {
-    if (!url) return true // optional avatar
+    if (!url) return true 
     try {
-      // basic URL validation
+      
       new URL(url)
       return true
     } catch {
